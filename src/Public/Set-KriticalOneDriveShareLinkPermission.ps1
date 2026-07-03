@@ -1,4 +1,4 @@
-function Set-KritOneDriveShareLinkPermission {
+function Set-KriticalOneDriveShareLinkPermission {
     <#
     .SYNOPSIS
         Update an existing OneDrive share permission in place — change roles, set/clear
@@ -19,7 +19,7 @@ function Set-KritOneDriveShareLinkPermission {
         Full path to a file or folder under the OneDrive for Business sync root.
 
     .PARAMETER PermissionId
-        The Graph permission ID to update (from Get-KritOneDriveShareLinkPermissions).
+        The Graph permission ID to update (from Get-KriticalOneDriveShareLinkPermissions).
 
     .PARAMETER Role
         view|edit. When set, PATCHes `roles` to ['read'] or ['write'].
@@ -35,17 +35,17 @@ function Set-KritOneDriveShareLinkPermission {
         Force device-code auth flow for headless contexts.
 
     .EXAMPLE
-        Set-KritOneDriveShareLinkPermission -LocalPath $f -PermissionId 'aTowIy5...' -Role edit
+        Set-KriticalOneDriveShareLinkPermission -LocalPath $f -PermissionId 'aTowIy5...' -Role edit
 
         Promote a view-only recipient to edit.
 
     .EXAMPLE
-        Set-KritOneDriveShareLinkPermission -LocalPath $f -PermissionId 'aTowIy5...' -ExpirationDateTime '2026-09-30T23:59:00Z'
+        Set-KriticalOneDriveShareLinkPermission -LocalPath $f -PermissionId 'aTowIy5...' -ExpirationDateTime '2026-09-30T23:59:00Z'
 
         Extend a recipient's expiry to end of Sept 2026.
 
     .EXAMPLE
-        Set-KritOneDriveShareLinkPermission -LocalPath $f -PermissionId 'aTowIy5...' -ExpirationDateTime ''
+        Set-KriticalOneDriveShareLinkPermission -LocalPath $f -PermissionId 'aTowIy5...' -ExpirationDateTime ''
 
         Clear an existing expiry (permanent access until manually revoked).
 
@@ -77,8 +77,8 @@ function Set-KritOneDriveShareLinkPermission {
               - asserts: paired tests/Unit/OneDriveShareLinkPermissions.Tests.ps1
 
         Author:  Joshua Finley
-        Repo:    Krit.OmniFramework
-        Added:   v1.1.13 — Krit.OmniFramework 2026-06-28 (.1507ab)
+        Repo:    Kritical.PS.OmniFramework
+        Added:   v1.1.13 — Kritical.PS.OmniFramework 2026-06-28 (.1507ab)
     #>
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
     [OutputType([pscustomobject])]
@@ -94,11 +94,11 @@ function Set-KritOneDriveShareLinkPermission {
     if (-not $PSBoundParameters.ContainsKey('Role') -and
         -not $PSBoundParameters.ContainsKey('ExpirationDateTime') -and
         -not $PSBoundParameters.ContainsKey('Password')) {
-        throw "Set-KritOneDriveShareLinkPermission requires at least one of -Role / -ExpirationDateTime / -Password."
+        throw "Set-KriticalOneDriveShareLinkPermission requires at least one of -Role / -ExpirationDateTime / -Password."
     }
 
     $scopes = @('Files.ReadWrite.All','Sites.ReadWrite.All','User.Read')
-    $resolved = Resolve-KritOneDriveDriveItem -LocalPath $LocalPath -Scopes $scopes -UseDeviceCode:$UseDeviceCode
+    $resolved = Resolve-KriticalOneDriveDriveItem -LocalPath $LocalPath -Scopes $scopes -UseDeviceCode:$UseDeviceCode
 
     $body = @{}
     if ($PSBoundParameters.ContainsKey('Role')) {

@@ -1,4 +1,4 @@
-function Invoke-KritMdLint {
+function Invoke-KriticalMdLint {
 <#
 .SYNOPSIS
     Programmatic markdown lint + auto-renumber for Kritical customer-facing documents.
@@ -36,13 +36,13 @@ function Invoke-KritMdLint {
     Suppress console output.
 
 .EXAMPLE
-    Invoke-KritMdLint -Path C:\path\to\Access-Checklist.md            # dry-run
-    Invoke-KritMdLint -Path C:\path\to\Access-Checklist.md -Apply    # write
-    Invoke-KritMdLint -Path C:\path\to\customer\folder -Apply        # bulk
+    Invoke-KriticalMdLint -Path C:\path\to\Access-Checklist.md            # dry-run
+    Invoke-KriticalMdLint -Path C:\path\to\Access-Checklist.md -Apply    # write
+    Invoke-KriticalMdLint -Path C:\path\to\customer\folder -Apply        # bulk
 
 .NOTES
     Author: Joshua Finley — Kritical Pty Ltd
-    Part of Krit.OmniFramework 1.1.8+
+    Part of Kritical.PS.OmniFramework 1.1.8+
 #>
     [CmdletBinding(SupportsShouldProcess)]
     param(

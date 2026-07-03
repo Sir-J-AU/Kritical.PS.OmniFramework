@@ -1,4 +1,4 @@
-# Krit.OmniFramework — Detailed Usage
+# Kritical.PS.OmniFramework — Detailed Usage
 
 ```text
 ·· × × × ···  SirJ's Deaddrop  ··· × × × ···
@@ -13,7 +13,7 @@ This file lists every exported function with the "what / why / how / proof" patt
 
 ## Foundation loader
 
-### `Import-KritFoundation`
+### `Import-KriticalFoundation`
 
 What: pulls `PSFramework` + `PSSharedGoods` + `PSWriteHTML` + `ImportExcel` (auto-installs missing). Optional Office modules (`PSWriteOffice`, `PSWriteWord`, `PSWritePDF`) auto-loaded when present.
 
@@ -22,10 +22,10 @@ Why: every Kritical script needs the same handful. One call, version-floored, id
 How:
 
 ```powershell
-Import-KritFoundation                                  # default
-Import-KritFoundation -NoInstall                       # CI runner with prebaked modules
-Import-KritFoundation -NoBanner -Quiet | Out-Null      # embedded in a larger script
-Import-KritFoundation -MinimumVersions @{ ImportExcel='7.8.6'; PSFramework='1.11.0' }
+Import-KriticalFoundation                                  # default
+Import-KriticalFoundation -NoInstall                       # CI runner with prebaked modules
+Import-KriticalFoundation -NoBanner -Quiet | Out-Null      # embedded in a larger script
+Import-KriticalFoundation -MinimumVersions @{ ImportExcel='7.8.6'; PSFramework='1.11.0' }
 ```
 
 Returns:
@@ -34,11 +34,11 @@ Returns:
 Ok             : True
 FailedRequired : 0
 Modules        : @(@{Module=PSFramework; Status=LOADED; Version=...}, ...)
-Platform       : (Get-KritPlatform output)
+Platform       : (Get-KriticalPlatform output)
 Timestamp      : 2026-06-24T...
 ```
 
-### `Get-KritFoundationStatus`
+### `Get-KriticalFoundationStatus`
 
 Read-only inventory without installing/loading anything. Useful in pre-flight audit screens.
 
@@ -46,7 +46,7 @@ Read-only inventory without installing/loading anything. Useful in pre-flight au
 
 ## Multi-OS platform
 
-### `Get-KritPlatform`
+### `Get-KriticalPlatform`
 
 Single normalised descriptor across Windows / macOS / Linux. Lookups:
 
@@ -72,7 +72,7 @@ PSVersion     : Version
 RawProbe      : the source dict used to derive the above (for diagnostics)
 ```
 
-### `Test-KritIsAdmin` / `Test-KritIsElevated`
+### `Test-KriticalIsAdmin` / `Test-KriticalIsElevated`
 
 Cross-OS privilege check. On Windows uses WindowsPrincipal; on *nix uses `id -u == 0`.
 
@@ -80,7 +80,7 @@ Cross-OS privilege check. On Windows uses WindowsPrincipal; on *nix uses `id -u 
 
 ## Tool inventory
 
-### `Get-KritToolInventory`
+### `Get-KriticalToolInventory`
 
 FHS / LSB-aware walker. Per-OS standard search paths:
 
@@ -105,25 +105,25 @@ Default canonical tool list (~80 items):
 Example:
 
 ```powershell
-Get-KritToolInventory | Where-Object Present | Format-Table Name, FirstPath
-Get-KritToolInventory -Tool git, docker, terraform -IncludeDuplicates | ConvertTo-Json -Depth 5
+Get-KriticalToolInventory | Where-Object Present | Format-Table Name, FirstPath
+Get-KriticalToolInventory -Tool git, docker, terraform -IncludeDuplicates | ConvertTo-Json -Depth 5
 ```
 
-### `Find-KritTool` / `Test-KritToolPresent`
+### `Find-KriticalTool` / `Test-KriticalToolPresent`
 
-Per-tool match lookup. `Find-KritTool` returns every match (so duplicates surface); `Test-KritToolPresent` is the boolean.
+Per-tool match lookup. `Find-KriticalTool` returns every match (so duplicates surface); `Test-KriticalToolPresent` is the boolean.
 
 ---
 
 ## Logging
 
-### `Write-KritLog`
+### `Write-KriticalLog`
 
 ```powershell
-Start-KritLogSession                                       # PSFramework when loaded; plain JSONL fallback
-Write-KritLog -Level Info -Message 'Phase 1 starting' -Tag 'krit-omni','phase-1'
-Write-KritLog -Level Error -Message 'connection failed' -Data @{ host = 'foo'; port = 443 }
-Stop-KritLogSession
+Start-KriticalLogSession                                       # PSFramework when loaded; plain JSONL fallback
+Write-KriticalLog -Level Info -Message 'Phase 1 starting' -Tag 'krit-omni','phase-1'
+Write-KriticalLog -Level Error -Message 'connection failed' -Data @{ host = 'foo'; port = 443 }
+Stop-KriticalLogSession
 ```
 
 Logs land at `%LOCALAPPDATA%\Kritical\Logs\krit-<utc>.jsonl` (fallback) or in PSFramework's configured log path.
@@ -132,26 +132,26 @@ Logs land at `%LOCALAPPDATA%\Kritical\Logs\krit-<utc>.jsonl` (fallback) or in PS
 
 ## Reporting
 
-### `New-KritHtmlReport`
+### `New-KriticalHtmlReport`
 
 Branded HTML with the Kritical banner at the top, per-section tables (PSWriteHTML when present; minimal hand-rolled HTML otherwise).
 
 ```powershell
-$inv = Get-KritToolInventory
-$plat = Get-KritPlatform
-New-KritHtmlReport `
+$inv = Get-KriticalToolInventory
+$plat = Get-KriticalPlatform
+New-KriticalHtmlReport `
     -Title 'Operator Day-1 Audit' `
     -Subtitle 'Tool inventory + platform descriptor' `
     -Section @{ Tools = $inv; Platform = @($plat) } `
     -OutFile C:\drop\day1-audit.html
 ```
 
-### `New-KritExcelReport`
+### `New-KriticalExcelReport`
 
 Multi-sheet xlsx with the Kritical brand banner as sheet 1.
 
 ```powershell
-New-KritExcelReport `
+New-KriticalExcelReport `
     -Title 'Operator Day-1 Audit' `
     -Sheet @{ Tools = $inv; Platform = @($plat) } `
     -OutFile C:\drop\day1-audit.xlsx
@@ -161,27 +161,27 @@ New-KritExcelReport `
 
 ## Config + path resolution
 
-### `Resolve-KritRepoRoot` / `Get-KritConfig` / `Get-KritProject` / `Get-KritPath`
+### `Resolve-KriticalRepoRoot` / `Get-KriticalConfig` / `Get-KriticalProject` / `Get-KriticalPath`
 
 Same idea as the old `Pax8FrameworkConfig`, now under the Krit.* namespace and OmniFramework-bundled. Resolves `krit-project.json` (preferred) or legacy `pax8-framework.settings.json` upward from the cwd.
 
 ```powershell
-$root  = Resolve-KritRepoRoot
-$cfg   = Get-KritConfig            # full PSCustomObject including config + repo root
-$proj  = Get-KritProject -Name 'pax8-connector'
-$lpath = Get-KritPath    -Name 'analysis'
+$root  = Resolve-KriticalRepoRoot
+$cfg   = Get-KriticalConfig            # full PSCustomObject including config + repo root
+$proj  = Get-KriticalProject -Name 'pax8-connector'
+$lpath = Get-KriticalPath    -Name 'analysis'
 ```
 
 ---
 
 ## Secrets posture
 
-### `Test-KritSecretsLoaded`
+### `Test-KriticalSecretsLoaded`
 
 Read-only check that the canonical Kritical secrets folder is reachable and required files are present.
 
 ```powershell
-Test-KritSecretsLoaded -RequireFiles 'pax8-mcpServer-auth.txt','psgallery-api-key.txt' |
+Test-KriticalSecretsLoaded -RequireFiles 'pax8-mcpServer-auth.txt','psgallery-api-key.txt' |
     Format-List Ok, FolderPresent, MissingFiles
 ```
 
@@ -190,10 +190,10 @@ Test-KritSecretsLoaded -RequireFiles 'pax8-mcpServer-auth.txt','psgallery-api-ke
 ## Proof it works
 
 ```powershell
-Import-Module Krit.OmniFramework -Force
-Get-KritPlatform | Format-List
-(Get-KritToolInventory | Where-Object Present).Count
-Test-KritSecretsLoaded
+Import-Module Kritical.PS.OmniFramework -Force
+Get-KriticalPlatform | Format-List
+(Get-KriticalToolInventory | Where-Object Present).Count
+Test-KriticalSecretsLoaded
 .\tests\Invoke-AllTests.ps1   # 17/17 expected
 ```
 

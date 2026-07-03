@@ -1,4 +1,4 @@
-function New-KritOneDriveShareLink {
+function New-KriticalOneDriveShareLink {
     <#
     .SYNOPSIS
         Generate a Microsoft Graph OneDrive sharing link for a local OneDrive-synced file or folder
@@ -58,19 +58,19 @@ function New-KritOneDriveShareLink {
         contexts where WAM cannot acquire a window handle.
 
     .EXAMPLE
-        $share = New-KritOneDriveShareLink -LocalPath 'C:/Users/joshl/OneDrive - Kritical Pty Ltd/EES/EES-proposal-pack-FINAL-SHARED'
+        $share = New-KriticalOneDriveShareLink -LocalPath 'C:/Users/joshl/OneDrive - Kritical Pty Ltd/EES/EES-proposal-pack-FINAL-SHARED'
         $share.WebUrl
         # https://kriticalptyltd-my.sharepoint.com/:f:/g/personal/joshua_finley_kritical_net/...
 
         Generates a tenant-scoped view link for the EES proposal pack folder.
 
     .EXAMPLE
-        $share = New-KritOneDriveShareLink -LocalPath 'C:/Users/joshl/OneDrive - Kritical Pty Ltd/EES/folder' -ShareType edit -ShareScope users -Recipients @('ben.szypowski@kritical.net','joshua.finley@kritical.net')
+        $share = New-KriticalOneDriveShareLink -LocalPath 'C:/Users/joshl/OneDrive - Kritical Pty Ltd/EES/folder' -ShareType edit -ShareScope users -Recipients @('ben.szypowski@kritical.net','joshua.finley@kritical.net')
 
         Generates an edit-scope named-recipient link for Ben + Josh.
 
     .EXAMPLE
-        $share = New-KritOneDriveShareLink -LocalPath 'C:/Users/joshl/OneDrive - Kritical Pty Ltd/Customer/folder' -ShareScope anonymous -Password 'OneTime-2026' -ExpirationDateTime '2026-07-31T17:00:00Z'
+        $share = New-KriticalOneDriveShareLink -LocalPath 'C:/Users/joshl/OneDrive - Kritical Pty Ltd/Customer/folder' -ShareScope anonymous -Password 'OneTime-2026' -ExpirationDateTime '2026-07-31T17:00:00Z'
 
         Generates a password-protected anonymous link expiring 31 Jul 2026 — for one-off external sharing.
 
@@ -109,8 +109,8 @@ function New-KritOneDriveShareLink {
               - asserts: paired tests/Unit/OneDriveShareLink.Tests.ps1
 
         Author:  Joshua Finley
-        Repo:    Krit.OmniFramework
-        Promoted-from: Kritical-M365DSC/management/New-KritOneDriveShareLink.ps1 (2026-06-28)
+        Repo:    Kritical.PS.OmniFramework
+        Promoted-from: Kritical-M365DSC/management/New-KriticalOneDriveShareLink.ps1 (2026-06-28)
     #>
     [CmdletBinding()]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPlainTextForPassword','Password',

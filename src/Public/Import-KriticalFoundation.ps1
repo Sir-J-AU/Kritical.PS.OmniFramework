@@ -1,4 +1,4 @@
-function Import-KritFoundation {
+function Import-KriticalFoundation {
     <#
     .SYNOPSIS
         Loads the Kritical PowerShell foundation: PSFramework + PSSharedGoods +
@@ -7,7 +7,7 @@ function Import-KritFoundation {
 
     .DESCRIPTION
         Foundation discipline: every Kritical script that needs logging /
-        reporting / Excel I/O can call `Import-KritFoundation` at the top
+        reporting / Excel I/O can call `Import-KriticalFoundation` at the top
         instead of remembering the half-dozen Install-Module + Import-Module
         incantations. Returns a status object for the caller.
 
@@ -24,11 +24,11 @@ function Import-KritFoundation {
         Optional hashtable overriding the default minimum-version floors.
 
     .EXAMPLE
-        Import-KritFoundation
+        Import-KriticalFoundation
 
     .EXAMPLE
         # Quiet mode in a script
-        Import-KritFoundation -NoBanner | Out-Null
+        Import-KriticalFoundation -NoBanner | Out-Null
 
     .NOTES
         Author: Joshua Finley - Kritical Pty Ltd
@@ -42,7 +42,7 @@ function Import-KritFoundation {
         [switch]    $Quiet
     )
 
-    if (-not $NoBanner.IsPresent) { Write-KritBanner -Title 'Import-KritFoundation' -Compact }
+    if (-not $NoBanner.IsPresent) { Write-KriticalBanner -Title 'Import-KriticalFoundation' -Compact }
 
     $defaultMin = @{
         'PSFramework'    = '1.10.318'
@@ -138,12 +138,12 @@ function Import-KritFoundation {
         Ok                = $ok
         FailedRequired    = $failedRequired.Count
         Modules           = @($results)
-        Platform          = (Get-KritPlatform)
+        Platform          = (Get-KriticalPlatform)
         Timestamp         = (Get-Date).ToUniversalTime()
     }
 }
 
-function Get-KritFoundationStatus {
+function Get-KriticalFoundationStatus {
     <#
     .SYNOPSIS
         Read-only foundation status without installing/loading anything.
@@ -162,5 +162,5 @@ function Get-KritFoundationStatus {
             Loaded    = [bool](Get-Module -Name $n -ErrorAction SilentlyContinue)
         }
     }
-    [pscustomobject]@{ Modules = @($rows); Platform = (Get-KritPlatform) }
+    [pscustomobject]@{ Modules = @($rows); Platform = (Get-KriticalPlatform) }
 }

@@ -1,11 +1,11 @@
-function Remove-KritOneDriveShareLinkPermission {
+function Remove-KriticalOneDriveShareLinkPermission {
     <#
     .SYNOPSIS
         Revoke a single OneDrive share permission by its PermissionId.
 
     .DESCRIPTION
         Calls Microsoft Graph `DELETE /me/drive/items/{id}/permissions/{permId}`.
-        Find the PermissionId via Get-KritOneDriveShareLinkPermissions.
+        Find the PermissionId via Get-KriticalOneDriveShareLinkPermissions.
 
         Use cases:
           • Customer engagement ends — revoke external recipient access.
@@ -19,18 +19,18 @@ function Remove-KritOneDriveShareLinkPermission {
         Full path to a file or folder under the OneDrive for Business sync root.
 
     .PARAMETER PermissionId
-        The Graph permission ID to revoke (from Get-KritOneDriveShareLinkPermissions).
+        The Graph permission ID to revoke (from Get-KriticalOneDriveShareLinkPermissions).
 
     .PARAMETER UseDeviceCode
         Force device-code auth flow for headless contexts.
 
     .EXAMPLE
-        Get-KritOneDriveShareLinkPermissions -LocalPath $f | Where-Object { $_.GrantedToEmails -contains 'lincoln@eeservices.io' } | ForEach-Object { Remove-KritOneDriveShareLinkPermission -LocalPath $f -PermissionId $_.PermissionId -Confirm:$false }
+        Get-KriticalOneDriveShareLinkPermissions -LocalPath $f | Where-Object { $_.GrantedToEmails -contains 'lincoln@eeservices.io' } | ForEach-Object { Remove-KriticalOneDriveShareLinkPermission -LocalPath $f -PermissionId $_.PermissionId -Confirm:$false }
 
         Revoke Lincoln's access after the engagement closes.
 
     .EXAMPLE
-        Remove-KritOneDriveShareLinkPermission -LocalPath 'C:/Users/joshl/OneDrive - Kritical Pty Ltd/EES/EES-proposal-pack-FINAL-SHARED' -PermissionId 'aTowIy5xLnxs...'
+        Remove-KriticalOneDriveShareLinkPermission -LocalPath 'C:/Users/joshl/OneDrive - Kritical Pty Ltd/EES/EES-proposal-pack-FINAL-SHARED' -PermissionId 'aTowIy5xLnxs...'
 
         Revoke a specific permission by ID.
 
@@ -57,8 +57,8 @@ function Remove-KritOneDriveShareLinkPermission {
               - asserts: paired tests/Unit/OneDriveShareLinkPermissions.Tests.ps1
 
         Author:  Joshua Finley
-        Repo:    Krit.OmniFramework
-        Added:   v1.1.13 — Krit.OmniFramework 2026-06-28 (.1507ab)
+        Repo:    Kritical.PS.OmniFramework
+        Added:   v1.1.13 — Kritical.PS.OmniFramework 2026-06-28 (.1507ab)
     #>
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
     [OutputType([pscustomobject])]
@@ -69,7 +69,7 @@ function Remove-KritOneDriveShareLinkPermission {
     )
 
     $scopes = @('Files.ReadWrite.All','Sites.ReadWrite.All','User.Read')
-    $resolved = Resolve-KritOneDriveDriveItem -LocalPath $LocalPath -Scopes $scopes -UseDeviceCode:$UseDeviceCode
+    $resolved = Resolve-KriticalOneDriveDriveItem -LocalPath $LocalPath -Scopes $scopes -UseDeviceCode:$UseDeviceCode
 
     $action = "Revoke permission $PermissionId on $($resolved.ItemName)"
     if (-not $PSCmdlet.ShouldProcess($resolved.ItemName, $action)) { return }

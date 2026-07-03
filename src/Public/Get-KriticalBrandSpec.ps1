@@ -1,6 +1,6 @@
-$script:KritBrandSpecCache = $null   # strict-mode safe initialiser; module-scope cache.
+$script:KriticalBrandSpecCache = $null   # strict-mode safe initialiser; module-scope cache.
 
-function Get-KritBrandSpec {
+function Get-KriticalBrandSpec {
     <#
     .SYNOPSIS
         Loads the canonical Kritical brand specification (brand-spec.json) with
@@ -17,7 +17,7 @@ function Get-KritBrandSpec {
           4. (cross-platform) /usr/share/kritical-branding/brand-spec.json
           5. Module-bundled Assets/brand-spec.json (last-ditch fallback for fresh installs)
 
-        Cached at $script:KritBrandSpecCache; use -Refresh to force re-read.
+        Cached at $script:KriticalBrandSpecCache; use -Refresh to force re-read.
 
     .PARAMETER Path
         Explicit override path.
@@ -26,11 +26,11 @@ function Get-KritBrandSpec {
         Force re-load even if cached.
 
     .EXAMPLE
-        $spec = Get-KritBrandSpec
+        $spec = Get-KriticalBrandSpec
         $primary = $spec.colours.primary.kriticalDarkBlue
 
     .EXAMPLE
-        $spec = Get-KritBrandSpec -Refresh
+        $spec = Get-KriticalBrandSpec -Refresh
         $spec.entity.abn
 
     .NOTES
@@ -44,8 +44,8 @@ function Get-KritBrandSpec {
         [switch] $Refresh
     )
 
-    if ($script:KritBrandSpecCache -and -not $Refresh.IsPresent -and -not $Path) {
-        return $script:KritBrandSpecCache
+    if ($script:KriticalBrandSpecCache -and -not $Refresh.IsPresent -and -not $Path) {
+        return $script:KriticalBrandSpecCache
     }
 
     $candidates = [System.Collections.Generic.List[string]]::new()
@@ -101,8 +101,8 @@ function Get-KritBrandSpec {
                 subheadings  = [pscustomobject]@{ family = 'Assistant'; weight = 'Medium'; size_pt = 21 }
             }
         }
-        $script:KritBrandSpecCache = $spec
-        Write-Verbose 'Get-KritBrandSpec: no spec file found; returning hard-coded fallback.'
+        $script:KriticalBrandSpecCache = $spec
+        Write-Verbose 'Get-KriticalBrandSpec: no spec file found; returning hard-coded fallback.'
         return $spec
     }
 
@@ -116,7 +116,7 @@ function Get-KritBrandSpec {
     # Attach the resolved source path for diagnostics.
     try { $spec | Add-Member -NotePropertyName _sourcePath -NotePropertyValue $found -Force } catch { }
 
-    $script:KritBrandSpecCache = $spec
-    Write-Verbose ("Get-KritBrandSpec: loaded from {0}" -f $found)
+    $script:KriticalBrandSpecCache = $spec
+    Write-Verbose ("Get-KriticalBrandSpec: loaded from {0}" -f $found)
     return $spec
 }

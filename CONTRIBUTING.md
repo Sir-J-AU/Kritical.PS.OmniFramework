@@ -1,4 +1,4 @@
-# Contributing to Krit.OmniFramework
+# Contributing to Kritical.PS.OmniFramework
 
 ```text
 ·· × × × ···  SirJ's Deaddrop  ··· × × × ···
@@ -19,7 +19,7 @@ Outside contributions require a Contributor License Agreement; reach Kritical at
 - `Set-StrictMode -Version Latest`.
 - Comment-based help on every public function (`.SYNOPSIS`, `.DESCRIPTION`, `.EXAMPLE`, `.NOTES Author: Joshua Finley - Kritical Pty Ltd`).
 - Private helpers go in `src/Private/`; public in `src/Public/`; all dot-sourced by the root `.psm1`.
-- Every operator-facing path emits the Kritical banner via `Write-KritBanner` (full or compact).
+- Every operator-facing path emits the Kritical banner via `Write-KriticalBanner` (full or compact).
 - No `Claude` / `Hermes` / `Codex` / `Copilot` / `GPT` strings anywhere in published output.
 
 ## Tests
@@ -28,7 +28,7 @@ Outside contributions require a Contributor License Agreement; reach Kritical at
 .\tests\Invoke-AllTests.ps1
 ```
 
-Output lands at `%LOCALAPPDATA%\Kritical\Krit.OmniFramework\test-output\`. Exit 0 = all pass.
+Output lands at `%LOCALAPPDATA%\Kritical\Kritical.PS.OmniFramework\test-output\`. Exit 0 = all pass.
 
 ## Versioning + publish
 

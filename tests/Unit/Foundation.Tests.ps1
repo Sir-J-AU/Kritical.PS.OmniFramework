@@ -1,11 +1,11 @@
 #requires -Modules Pester
 BeforeAll {
-    Import-Module (Join-Path $PSScriptRoot '..\..\src\Krit.OmniFramework.psm1') -Force
+    Import-Module (Join-Path $PSScriptRoot '..\..\src\Kritical.PS.OmniFramework.psm1') -Force
 }
 
-Describe 'Get-KritFoundationStatus' {
+Describe 'Get-KriticalFoundationStatus' {
     It 'returns module + platform sections' {
-        $s = Get-KritFoundationStatus
+        $s = Get-KriticalFoundationStatus
         $s.Modules  | Should -Not -BeNullOrEmpty
         $s.Platform | Should -Not -BeNullOrEmpty
         ($s.Modules | Where-Object Module -eq 'PSFramework') | Should -Not -BeNullOrEmpty
@@ -14,9 +14,9 @@ Describe 'Get-KritFoundationStatus' {
     }
 }
 
-Describe 'Import-KritFoundation (NoInstall, NoBanner, Quiet)' {
+Describe 'Import-KriticalFoundation (NoInstall, NoBanner, Quiet)' {
     It 'returns a status object without throwing' {
-        $r = Import-KritFoundation -NoInstall -NoBanner -Quiet
+        $r = Import-KriticalFoundation -NoInstall -NoBanner -Quiet
         $r        | Should -Not -BeNullOrEmpty
         $r.Modules | Should -Not -BeNullOrEmpty
         $r.Ok     | Should -BeOfType [bool]

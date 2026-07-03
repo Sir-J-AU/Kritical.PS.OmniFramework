@@ -1,11 +1,11 @@
-# Krit.OmniFramework — OneDrive Share-Link Toolkit
+# Kritical.PS.OmniFramework — OneDrive Share-Link Toolkit
 
 5 PowerShell cmdlets to **mint, audit, add to, modify and revoke** Microsoft OneDrive for Business
 share permissions from PowerShell, using delegated Microsoft Graph user-auth (no API keys, no
 service principals). Designed for distributing customer-engagement packs, internal documents and
 multi-recipient bundles by **share link** rather than by 10MB email attachment.
 
-Shipped in **Krit.OmniFramework v1.1.12+** (the four management cmdlets in v1.1.13+; external-guest
+Shipped in **Kritical.PS.OmniFramework v1.1.12+** (the four management cmdlets in v1.1.13+; external-guest
 email surfacing in v1.1.14+).
 
 ---
@@ -26,8 +26,8 @@ email surfacing in v1.1.14+).
 ## Install
 
 ```powershell
-Install-Module Krit.OmniFramework -Scope CurrentUser
-Import-Module Krit.OmniFramework -Force
+Install-Module Kritical.PS.OmniFramework -Scope CurrentUser
+Import-Module Kritical.PS.OmniFramework -Force
 ```
 
 Requires PowerShell 5.1+ or PowerShell 7. The cmdlets transparently install
@@ -39,11 +39,11 @@ Requires PowerShell 5.1+ or PowerShell 7. The cmdlets transparently install
 
 | Cmdlet | Graph verb / endpoint | Purpose |
 |---|---|---|
-| `New-KritOneDriveShareLink`            | `POST /me/drive/items/{id}/createLink`    | Mint a share-link permission (view\|edit × anonymous\|organization\|users) |
-| `Get-KritOneDriveShareLinkPermissions` | `GET  /me/drive/items/{id}/permissions`   | List every permission currently in force on a synced item |
-| `Add-KritOneDriveShareLinkRecipients`  | `POST /me/drive/items/{id}/invite`        | Add named recipients WITHOUT disrupting any other permission |
-| `Set-KritOneDriveShareLinkPermission`  | `PATCH /me/drive/items/{id}/permissions/{permId}` | Change role / expiry / password on an existing permission in place |
-| `Remove-KritOneDriveShareLinkPermission` | `DELETE /me/drive/items/{id}/permissions/{permId}` | Revoke a single permission by ID |
+| `New-KriticalOneDriveShareLink`            | `POST /me/drive/items/{id}/createLink`    | Mint a share-link permission (view\|edit × anonymous\|organization\|users) |
+| `Get-KriticalOneDriveShareLinkPermissions` | `GET  /me/drive/items/{id}/permissions`   | List every permission currently in force on a synced item |
+| `Add-KriticalOneDriveShareLinkRecipients`  | `POST /me/drive/items/{id}/invite`        | Add named recipients WITHOUT disrupting any other permission |
+| `Set-KriticalOneDriveShareLinkPermission`  | `PATCH /me/drive/items/{id}/permissions/{permId}` | Change role / expiry / password on an existing permission in place |
+| `Remove-KriticalOneDriveShareLinkPermission` | `DELETE /me/drive/items/{id}/permissions/{permId}` | Revoke a single permission by ID |
 
 All five resolve the local OneDrive sync path to its cloud DriveItem via
 `HKCU:\SOFTWARE\Microsoft\OneDrive\Accounts\Business1\UserFolder` → `/me/drive/root:/<path>`.
@@ -69,7 +69,7 @@ Delegated Graph scopes requested on every call: `Files.ReadWrite.All`, `Sites.Re
 
 ```powershell
 # 1. Mint a link to a folder you want to share
-$share = New-KritOneDriveShareLink `
+$share = New-KriticalOneDriveShareLink `
     -LocalPath 'C:\Users\you\OneDrive - Your Tenant\Customer\Engagement-FINAL-SHARED' `
     -ShareType edit `
     -ShareScope users `
@@ -78,11 +78,11 @@ $share = New-KritOneDriveShareLink `
 $share.WebUrl   # save this URL — it stays stable across content refreshes
 
 # 2. See who has access right now
-Get-KritOneDriveShareLinkPermissions -LocalPath 'C:\Users\you\OneDrive - Your Tenant\Customer\Engagement-FINAL-SHARED' |
+Get-KriticalOneDriveShareLinkPermissions -LocalPath 'C:\Users\you\OneDrive - Your Tenant\Customer\Engagement-FINAL-SHARED' |
     Format-Table Type, Roles, LinkScope, GrantedToEmails -AutoSize
 
 # 3. Add another recipient (e.g. the customer) without disrupting the existing share
-Add-KritOneDriveShareLinkRecipients `
+Add-KriticalOneDriveShareLinkRecipients `
     -LocalPath 'C:\Users\you\OneDrive - Your Tenant\Customer\Engagement-FINAL-SHARED' `
     -Recipients 'customer.contact@external.com' `
     -Role view
@@ -91,23 +91,23 @@ Add-KritOneDriveShareLinkRecipients `
 #    The recipient keeps clicking the same URL and sees the latest content automatically.
 
 # 5. Update someone's role in place (without revoking + re-inviting)
-$perms = Get-KritOneDriveShareLinkPermissions -LocalPath '...' 
+$perms = Get-KriticalOneDriveShareLinkPermissions -LocalPath '...' 
 $lincoln = $perms | Where-Object { $_.GrantedToEmails -contains 'customer.contact@external.com' }
-Set-KritOneDriveShareLinkPermission -LocalPath '...' -PermissionId $lincoln.PermissionId -Role edit
+Set-KriticalOneDriveShareLinkPermission -LocalPath '...' -PermissionId $lincoln.PermissionId -Role edit
 
 # 6. Add an expiry to an existing permission
-Set-KritOneDriveShareLinkPermission -LocalPath '...' -PermissionId $lincoln.PermissionId `
+Set-KriticalOneDriveShareLinkPermission -LocalPath '...' -PermissionId $lincoln.PermissionId `
     -ExpirationDateTime '2026-09-30T23:59:00Z'
 
 # 7. Clear an existing expiry (empty string semantics)
-Set-KritOneDriveShareLinkPermission -LocalPath '...' -PermissionId $lincoln.PermissionId `
+Set-KriticalOneDriveShareLinkPermission -LocalPath '...' -PermissionId $lincoln.PermissionId `
     -ExpirationDateTime ''
 
 # 8. Revoke a single recipient when the engagement closes
-Get-KritOneDriveShareLinkPermissions -LocalPath '...' |
+Get-KriticalOneDriveShareLinkPermissions -LocalPath '...' |
     Where-Object { $_.GrantedToEmails -contains 'customer.contact@external.com' } |
     ForEach-Object {
-        Remove-KritOneDriveShareLinkPermission `
+        Remove-KriticalOneDriveShareLinkPermission `
             -LocalPath '...' -PermissionId $_.PermissionId -Confirm:$false
     }
 ```
@@ -116,13 +116,13 @@ Get-KritOneDriveShareLinkPermissions -LocalPath '...' |
 
 ## Cmdlet reference
 
-### `New-KritOneDriveShareLink`
+### `New-KriticalOneDriveShareLink`
 
 Mint a fresh share-link permission. Idempotent for the same `(ShareScope, ShareType)` pair —
 Graph returns the same `WebUrl` if a matching permission already exists.
 
 ```powershell
-New-KritOneDriveShareLink `
+New-KriticalOneDriveShareLink `
     -LocalPath <string> `              # Required. Local OneDrive-synced path.
     [-ShareType view|edit]             # Default: view
     [-ShareScope anonymous|organization|users]  # Default: organization
@@ -135,12 +135,12 @@ New-KritOneDriveShareLink `
 Returns `PSCustomObject` — `WebUrl`, `ShareId`, `ItemId`, `DriveId`, `ItemName`, `IsFolder`,
 `ShareType`, `ShareScope`, `CreatedAt`.
 
-### `Get-KritOneDriveShareLinkPermissions`
+### `Get-KriticalOneDriveShareLinkPermissions`
 
 List every permission on a local OneDrive-synced item. Read-only.
 
 ```powershell
-Get-KritOneDriveShareLinkPermissions -LocalPath <string> [-UseDeviceCode]
+Get-KriticalOneDriveShareLinkPermissions -LocalPath <string> [-UseDeviceCode]
 ```
 
 Returns one `PSCustomObject` per permission — `PermissionId`, `Type` (`user`|`link`|`inheritance`|
@@ -150,13 +150,13 @@ Returns one `PSCustomObject` per permission — `PermissionId`, `Type` (`user`|`
 Internal tenant grants surface under `.user`; external-guest grants under `.siteUser` — the cmdlet
 walks both (plus `.group`, `.application`, `.device`) and deduplicates the result.
 
-### `Add-KritOneDriveShareLinkRecipients`
+### `Add-KriticalOneDriveShareLinkRecipients`
 
 Add named recipients to an item **without touching any existing permission**. Calls
 `POST /me/drive/items/{id}/invite`.
 
 ```powershell
-Add-KritOneDriveShareLinkRecipients `
+Add-KriticalOneDriveShareLinkRecipients `
     -LocalPath <string> `              # Required
     -Recipients <string[]> `           # Required (internal + external emails)
     [-Role view|edit]                  # Default: view
@@ -171,13 +171,13 @@ Add-KritOneDriveShareLinkRecipients `
 
 Returns one `PSCustomObject` per newly-granted permission.
 
-### `Set-KritOneDriveShareLinkPermission`
+### `Set-KriticalOneDriveShareLinkPermission`
 
 Update an existing permission in place — change role, set/clear expiry, set/clear password. Calls
 `PATCH /me/drive/items/{id}/permissions/{permId}`.
 
 ```powershell
-Set-KritOneDriveShareLinkPermission `
+Set-KriticalOneDriveShareLinkPermission `
     -LocalPath <string> `              # Required
     -PermissionId <string> `           # Required (from Get-)
     [-Role view|edit]                  # Updates roles
@@ -190,13 +190,13 @@ Set-KritOneDriveShareLinkPermission `
 At least one of `-Role` / `-ExpirationDateTime` / `-Password` must be supplied. Returns
 `PSCustomObject` reflecting Graph's PATCH response.
 
-### `Remove-KritOneDriveShareLinkPermission`
+### `Remove-KriticalOneDriveShareLinkPermission`
 
 Revoke a single permission by ID. Other permissions on the item are not touched. Calls
 `DELETE /me/drive/items/{id}/permissions/{permId}`.
 
 ```powershell
-Remove-KritOneDriveShareLinkPermission `
+Remove-KriticalOneDriveShareLinkPermission `
     -LocalPath <string> `              # Required
     -PermissionId <string> `           # Required (from Get-)
     [-UseDeviceCode]
@@ -217,12 +217,12 @@ Standard pattern for distributing a multi-document customer proposal pack:
    `<Customer>/<Engagement>-FINAL-SHARED/`.
 3. **Mint the share link** to your internal team:
    ```powershell
-   New-KritOneDriveShareLink -LocalPath <pack-folder> -ShareType edit -ShareScope users `
+   New-KriticalOneDriveShareLink -LocalPath <pack-folder> -ShareType edit -ShareScope users `
        -Recipients @('teammate1@yourtenant.com','teammate2@yourtenant.com')
    ```
 4. **Add the customer contact** as view-only:
    ```powershell
-   Add-KritOneDriveShareLinkRecipients -LocalPath <pack-folder> `
+   Add-KriticalOneDriveShareLinkRecipients -LocalPath <pack-folder> `
        -Recipients 'customer@external.com' -Role view
    ```
 5. **Send your own cover email** with the share URL — operators almost always prefer their own
@@ -231,7 +231,7 @@ Standard pattern for distributing a multi-document customer proposal pack:
 6. **Refresh the pack later** by archiving the prior contents into a `_ARCHIVED-<utc>-<reason>/`
    subfolder (never delete — preserves history), dropping the new revision, re-zipping. The share
    URL is unchanged so every recipient picks up the update automatically.
-7. **Audit** any time with `Get-KritOneDriveShareLinkPermissions` to confirm who has access.
+7. **Audit** any time with `Get-KriticalOneDriveShareLinkPermissions` to confirm who has access.
 8. **Revoke** the customer when the engagement closes via `Remove-...` filtered by their email.
 
 ---
@@ -242,8 +242,8 @@ The `Type` column in the Get output tells you what kind of permission Graph repo
 
 | Type | What it means |
 |---|---|
-| `link`        | A share-link permission (mintable via `New-KritOneDriveShareLink`). `LinkScope` + `LinkType` tell you the scope/role; `WebUrl` is the URL itself. |
-| `user`        | A direct user / guest grant (produced by `Add-KritOneDriveShareLinkRecipients` via `/invite`). |
+| `link`        | A share-link permission (mintable via `New-KriticalOneDriveShareLink`). `LinkScope` + `LinkType` tell you the scope/role; `WebUrl` is the URL itself. |
+| `user`        | A direct user / guest grant (produced by `Add-KriticalOneDriveShareLinkRecipients` via `/invite`). |
 | `inheritance` | A permission inherited from a parent folder. Don't try to delete these on the child — go to the parent. |
 | `application` | A service-principal grant (rare in user-delegated contexts; usually appears for first-party Microsoft apps). |
 
@@ -257,11 +257,11 @@ be removed.
 | Error | Cause | Fix |
 |---|---|---|
 | `Connect-MgGraph: InteractiveBrowserCredential authentication failed: A window handle must be configured` | Running from a subshell with no window (e.g. VS Code embedded terminal) | Re-run from a normal pwsh window, OR pass `-UseDeviceCode` |
-| `The property 'grantedToIdentitiesV2' cannot be found on this object` | Old version of Krit.OmniFramework (pre-1.1.13) still installed | Update: `Install-Module Krit.OmniFramework -Force -Scope CurrentUser` and re-import |
+| `The property 'grantedToIdentitiesV2' cannot be found on this object` | Old version of Kritical.PS.OmniFramework (pre-1.1.13) still installed | Update: `Install-Module Kritical.PS.OmniFramework -Force -Scope CurrentUser` and re-import |
 | `OneDrive for Business sync root not found in registry...` | OneDrive sync client not signed in on this machine | Sign in to OneDrive for Business; re-try |
 | `Path '...' is not under the OneDrive sync root '...'` | LocalPath is somewhere outside the synced OneDrive Business1 root | Move the folder into the OneDrive sync tree (or point LocalPath at one inside it) |
 | 404 from Graph on `Remove-` / `Set-` | PermissionId no longer exists (already revoked, or wrong ID) | Re-run `Get-` to get a current list |
-| Lincoln's email shows empty in `Get-` output | You're on Krit.OmniFramework < 1.1.14 (external-guest emails landed under `siteUser` not `user`) | Upgrade to 1.1.14+ |
+| Lincoln's email shows empty in `Get-` output | You're on Kritical.PS.OmniFramework < 1.1.14 (external-guest emails landed under `siteUser` not `user`) | Upgrade to 1.1.14+ |
 
 ---
 
@@ -296,5 +296,5 @@ be removed.
 ---
 
 Author: Joshua Finley — Kritical Pty Ltd — <https://kritical.net>
-Module: Krit.OmniFramework — <https://github.com/Sir-J-AU/Krit.OmniFramework>
+Module: Kritical.PS.OmniFramework — <https://github.com/Sir-J-AU/Kritical.PS.OmniFramework>
 License: MIT — see [LICENSE](../LICENSE)

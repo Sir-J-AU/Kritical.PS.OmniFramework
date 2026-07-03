@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Krit.OmniFramework - Kritical multi-OS PowerShell foundation.
+    Kritical.PS.OmniFramework - Kritical multi-OS PowerShell foundation.
 
 .DESCRIPTION
     Single Import-Module brings up the Kritical PowerShell foundation:
@@ -33,23 +33,23 @@ foreach ($dir in 'Private','Public') {
 }
 
 Export-ModuleMember -Function @(
-    'Write-KritBanner', 'Get-KritBanner',
-    'Get-KritPlatform', 'Test-KritIsAdmin', 'Test-KritIsElevated',
-    'Get-KritToolInventory', 'Find-KritTool', 'Test-KritToolPresent',
-    'Import-KritFoundation', 'Get-KritFoundationStatus',
-    'Write-KritLog', 'Start-KritLogSession', 'Stop-KritLogSession',
-    'New-KritHtmlReport', 'New-KritExcelReport',
-    'Resolve-KritRepoRoot', 'Get-KritConfig', 'Get-KritProject', 'Get-KritPath',
-    'Test-KritSecretsLoaded',
+    'Write-KriticalBanner', 'Get-KriticalBanner',
+    'Get-KriticalPlatform', 'Test-KriticalIsAdmin', 'Test-KriticalIsElevated',
+    'Get-KriticalToolInventory', 'Find-KriticalTool', 'Test-KriticalToolPresent',
+    'Import-KriticalFoundation', 'Get-KriticalFoundationStatus',
+    'Write-KriticalLog', 'Start-KriticalLogSession', 'Stop-KriticalLogSession',
+    'New-KriticalHtmlReport', 'New-KriticalExcelReport',
+    'Resolve-KriticalRepoRoot', 'Get-KriticalConfig', 'Get-KriticalProject', 'Get-KriticalPath',
+    'Test-KriticalSecretsLoaded',
     # 1.1.0 - Brand pipeline
-    'Get-KritBrandSpec', 'New-KritBrandedDocument',
+    'Get-KriticalBrandSpec', 'New-KriticalBrandedDocument',
     # 1.1.8 - Programmatic markdown linter
-    'Invoke-KritMdLint',
+    'Invoke-KriticalMdLint',
     # 1.1.12 - OneDrive sharing-link helper (Microsoft Graph delegated auth)
-    'New-KritOneDriveShareLink',
+    'New-KriticalOneDriveShareLink',
     # 1.1.13 - OneDrive share-permission management
-    'Get-KritOneDriveShareLinkPermissions',
-    'Add-KritOneDriveShareLinkRecipients',
-    'Remove-KritOneDriveShareLinkPermission',
-    'Set-KritOneDriveShareLinkPermission'
+    'Get-KriticalOneDriveShareLinkPermissions',
+    'Add-KriticalOneDriveShareLinkRecipients',
+    'Remove-KriticalOneDriveShareLinkPermission',
+    'Set-KriticalOneDriveShareLinkPermission'
 )

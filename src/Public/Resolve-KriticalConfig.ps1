@@ -1,4 +1,4 @@
-function Resolve-KritRepoRoot {
+function Resolve-KriticalRepoRoot {
     <#
     .SYNOPSIS
         Walks up from the current directory until it finds a Kritical repo
@@ -9,7 +9,7 @@ function Resolve-KritRepoRoot {
     param([string] $StartPath = (Get-Location).Path)
     $dir = $StartPath
     # Repo-root markers — kept brand-neutral (no AI-agent file names).
-    $markers = @('.git','krit-project.json','config/krit-project.json','config/pax8-framework.settings.json','pax8-framework.settings.json','Krit.OmniFramework.psd1')
+    $markers = @('.git','krit-project.json','config/krit-project.json','config/pax8-framework.settings.json','pax8-framework.settings.json','Kritical.PS.OmniFramework.psd1')
     for ($i=0; $i -lt 12 -and $dir; $i++) {
         foreach ($m in $markers) {
             if (Test-Path -LiteralPath (Join-Path $dir $m)) { return $dir }
@@ -21,7 +21,7 @@ function Resolve-KritRepoRoot {
     return $null
 }
 
-function Get-KritConfig {
+function Get-KriticalConfig {
     <#
     .SYNOPSIS
         Loads a JSON config file from the resolved repo root. Default name:
@@ -33,7 +33,7 @@ function Get-KritConfig {
         [string] $StartPath = (Get-Location).Path,
         [string] $ConfigName
     )
-    $root = Resolve-KritRepoRoot -StartPath $StartPath
+    $root = Resolve-KriticalRepoRoot -StartPath $StartPath
     if (-not $root) { throw "Could not resolve a Kritical repo root above $StartPath" }
     $candidates = if ($ConfigName) { @($ConfigName) } else {
         @('krit-project.json','config/krit-project.json','config/pax8-framework.settings.json','pax8-framework.settings.json')
@@ -52,11 +52,11 @@ function Get-KritConfig {
     return [pscustomobject]@{ RepoRoot = $root; ConfigPath = $null; ConfigName = $null; Config = $null }
 }
 
-function Get-KritProject {
+function Get-KriticalProject {
     [CmdletBinding()]
     [OutputType([pscustomobject])]
     param([string] $StartPath = (Get-Location).Path, [Parameter(Mandatory)] [string] $Name)
-    $cfg = Get-KritConfig -StartPath $StartPath
+    $cfg = Get-KriticalConfig -StartPath $StartPath
     if (-not $cfg.Config) { return $null }
     $projects = $cfg.Config.projects
     if (-not $projects) { return $null }
@@ -65,7 +65,7 @@ function Get-KritProject {
     return $p.Value
 }
 
-function Get-KritPath {
+function Get-KriticalPath {
     <#
     .SYNOPSIS
         Resolves a named path under the Kritical config 'paths' section.
@@ -73,7 +73,7 @@ function Get-KritPath {
     [CmdletBinding()]
     [OutputType([string])]
     param([string] $StartPath = (Get-Location).Path, [Parameter(Mandatory)] [string] $Name)
-    $cfg = Get-KritConfig -StartPath $StartPath
+    $cfg = Get-KriticalConfig -StartPath $StartPath
     if (-not $cfg.Config) { return $null }
     $paths = $cfg.Config.paths
     if (-not $paths) { return $null }
@@ -84,7 +84,7 @@ function Get-KritPath {
     return (Join-Path $cfg.RepoRoot $val)
 }
 
-function Test-KritSecretsLoaded {
+function Test-KriticalSecretsLoaded {
     <#
     .SYNOPSIS
         Reports whether the canonical Kritical secrets folder is reachable AND

@@ -1,10 +1,10 @@
 <#
 .SYNOPSIS
-    Publish Krit.OmniFramework to PSGallery with full pre-publish gates
+    Publish Kritical.PS.OmniFramework to PSGallery with full pre-publish gates
     (docs check + Pester suite + manifest validation + secrets discipline).
 
 .DESCRIPTION
-    Mirrors Publish-KritPax8Mcp pattern. Refuses to publish a red build.
+    Mirrors Publish-KriticalPax8Mcp pattern. Refuses to publish a red build.
     API key read from the canonical Kritical secrets folder, never echoed.
 
 .PARAMETER ApiKeyFile
@@ -20,7 +20,7 @@
 [OutputType([pscustomobject])]
 param(
     [string] $ApiKeyFile,
-    [string] $ModuleName = 'Krit.OmniFramework',
+    [string] $ModuleName = 'Kritical.PS.OmniFramework',
     [string] $RepoRoot,
     [switch] $SkipManifestTest,
     [switch] $SkipTests,

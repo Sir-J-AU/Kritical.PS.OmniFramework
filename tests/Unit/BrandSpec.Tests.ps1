@@ -1,11 +1,11 @@
 $here = Split-Path -Parent $PSCommandPath
 $repoRoot = Split-Path -Parent (Split-Path -Parent $here)
-$module = Join-Path $repoRoot 'src\Krit.OmniFramework.psd1'
+$module = Join-Path $repoRoot 'src\Kritical.PS.OmniFramework.psd1'
 Import-Module $module -Force
 
-Describe 'Get-KritBrandSpec' {
+Describe 'Get-KriticalBrandSpec' {
     BeforeAll {
-        $script:Spec = Get-KritBrandSpec -Refresh
+        $script:Spec = Get-KriticalBrandSpec -Refresh
     }
 
     It 'returns a non-null brand spec' {
@@ -34,13 +34,13 @@ Describe 'Get-KritBrandSpec' {
     }
 
     It 'caches across calls (second call returns same object identity OR equivalent content)' {
-        $first  = Get-KritBrandSpec
-        $second = Get-KritBrandSpec
+        $first  = Get-KriticalBrandSpec
+        $second = Get-KriticalBrandSpec
         $second.entity.abn | Should -Be $first.entity.abn
     }
 }
 
-Describe 'New-KritBrandedDocument (smoke - requires Pandoc)' {
+Describe 'New-KriticalBrandedDocument (smoke - requires Pandoc)' {
     BeforeDiscovery {
         $script:HasPandoc = $null -ne (Get-Command pandoc -ErrorAction SilentlyContinue)
     }
@@ -61,7 +61,7 @@ This is a test paragraph with **bold** and *italic*.
 > A blockquote.
 "@ | Set-Content -LiteralPath $src -Encoding UTF8
 
-        $result = New-KritBrandedDocument -Source $src -OutDir $tmp -Format HTML `
+        $result = New-KriticalBrandedDocument -Source $src -OutDir $tmp -Format HTML `
             -CustomerName 'TestCo' -DocumentTitle 'Smoke' -NoBanner
 
         $result | Should -Not -BeNullOrEmpty

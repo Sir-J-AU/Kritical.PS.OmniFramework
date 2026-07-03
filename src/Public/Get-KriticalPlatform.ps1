@@ -1,4 +1,4 @@
-function Test-KritIsAdmin {
+function Test-KriticalIsAdmin {
     <#
     .SYNOPSIS
         True on Windows when the process token has Administrator role; on
@@ -14,16 +14,16 @@ function Test-KritIsAdmin {
     try { return ([int](id -u 2>$null) -eq 0) } catch { return $false }
 }
 
-function Test-KritIsElevated {
+function Test-KriticalIsElevated {
     <#
     .SYNOPSIS
-        Synonym for Test-KritIsAdmin (some scripts read more naturally with this name).
+        Synonym for Test-KriticalIsAdmin (some scripts read more naturally with this name).
     #>
     [CmdletBinding()] [OutputType([bool])] param()
-    return (Test-KritIsAdmin)
+    return (Test-KriticalIsAdmin)
 }
 
-function Get-KritPlatform {
+function Get-KriticalPlatform {
     <#
     .SYNOPSIS
         Returns a normalised platform descriptor across Windows / macOS / Linux.
@@ -52,7 +52,7 @@ function Get-KritPlatform {
         }
 
     .EXAMPLE
-        Get-KritPlatform | Format-List
+        Get-KriticalPlatform | Format-List
     #>
     [CmdletBinding()]
     [OutputType([pscustomobject])]
@@ -141,7 +141,7 @@ function Get-KritPlatform {
         Architecture  = $arch
         HostName      = [System.Net.Dns]::GetHostName()
         UserName      = [System.Environment]::UserName
-        IsAdmin       = (Test-KritIsAdmin)
+        IsAdmin       = (Test-KriticalIsAdmin)
         PSEdition     = $PSVersionTable.PSEdition
         PSVersion     = $PSVersionTable.PSVersion
         RawProbe      = $raw

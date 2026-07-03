@@ -1,4 +1,4 @@
-function Add-KritOneDriveShareLinkRecipients {
+function Add-KriticalOneDriveShareLinkRecipients {
     <#
     .SYNOPSIS
         Grant additional named recipients access to an existing OneDrive-synced item
@@ -51,18 +51,18 @@ function Add-KritOneDriveShareLinkRecipients {
         Force device-code auth flow for headless contexts.
 
     .EXAMPLE
-        Add-KritOneDriveShareLinkRecipients -LocalPath 'C:/Users/joshl/OneDrive - Kritical Pty Ltd/EES/EES-proposal-pack-FINAL-SHARED' -Recipients 'lincoln@eeservices.io' -Role view
+        Add-KriticalOneDriveShareLinkRecipients -LocalPath 'C:/Users/joshl/OneDrive - Kritical Pty Ltd/EES/EES-proposal-pack-FINAL-SHARED' -Recipients 'lincoln@eeservices.io' -Role view
 
         Adds Lincoln (view-access) to the EES share. Josh + Ben's existing edit
         permission stays exactly as it was.
 
     .EXAMPLE
-        Add-KritOneDriveShareLinkRecipients -LocalPath $f -Recipients @('lincoln@eeservices.io','mark@eeservices.io') -Role view -SendInvitation -Message 'EES proposal pack — link arrives separately from joshua.finley@kritical.net.'
+        Add-KriticalOneDriveShareLinkRecipients -LocalPath $f -Recipients @('lincoln@eeservices.io','mark@eeservices.io') -Role view -SendInvitation -Message 'EES proposal pack — link arrives separately from joshua.finley@kritical.net.'
 
         Adds two external recipients with a Graph-sent invitation email + custom message.
 
     .EXAMPLE
-        Add-KritOneDriveShareLinkRecipients -LocalPath $f -Recipients 'reviewer@external.com' -Role view -ExpirationDateTime '2026-07-31T17:00:00Z' -RequireSignIn:$false
+        Add-KriticalOneDriveShareLinkRecipients -LocalPath $f -Recipients 'reviewer@external.com' -Role view -ExpirationDateTime '2026-07-31T17:00:00Z' -RequireSignIn:$false
 
         Adds an external reviewer with a hard expiry; sign-in not required.
 
@@ -99,8 +99,8 @@ function Add-KritOneDriveShareLinkRecipients {
               - asserts: paired tests/Unit/OneDriveShareLinkPermissions.Tests.ps1
 
         Author:  Joshua Finley
-        Repo:    Krit.OmniFramework
-        Added:   v1.1.13 — Krit.OmniFramework 2026-06-28 (.1507ab)
+        Repo:    Kritical.PS.OmniFramework
+        Added:   v1.1.13 — Kritical.PS.OmniFramework 2026-06-28 (.1507ab)
     #>
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPlainTextForPassword','Password',
@@ -122,7 +122,7 @@ function Add-KritOneDriveShareLinkRecipients {
     )
 
     $scopes = @('Files.ReadWrite.All','Sites.ReadWrite.All','User.Read')
-    $resolved = Resolve-KritOneDriveDriveItem -LocalPath $LocalPath -Scopes $scopes -UseDeviceCode:$UseDeviceCode
+    $resolved = Resolve-KriticalOneDriveDriveItem -LocalPath $LocalPath -Scopes $scopes -UseDeviceCode:$UseDeviceCode
 
     $roleString = if ($Role -eq 'edit') { 'write' } else { 'read' }
     $body = @{
@@ -144,28 +144,28 @@ function Add-KritOneDriveShareLinkRecipients {
     Write-Verbose "Inviting $($Recipients.Count) recipient(s) as $Role (requireSignIn=$RequireSignIn, sendInvitation=$SendInvitation)"
     $resp = Invoke-MgGraphRequest -Method POST -Uri $inviteUri -Body $bodyJson -ContentType 'application/json' -ErrorAction Stop
 
-    $respValue = Get-KritGraphProp -Object $resp -Name 'value'
+    $respValue = Get-KriticalGraphProp -Object $resp -Name 'value'
     foreach ($p in @($respValue)) {
         $emails = @()
         $names  = @()
-        $idV2   = Get-KritGraphProp -Object $p -Name 'grantedToIdentitiesV2'
-        $gV2    = Get-KritGraphProp -Object $p -Name 'grantedToV2'
+        $idV2   = Get-KriticalGraphProp -Object $p -Name 'grantedToIdentitiesV2'
+        $gV2    = Get-KriticalGraphProp -Object $p -Name 'grantedToV2'
         foreach ($g in @($idV2) + @($gV2)) {
             if ($null -eq $g) { continue }
-            $u = Get-KritGraphProp -Object $g -Name 'user'
+            $u = Get-KriticalGraphProp -Object $g -Name 'user'
             if ($null -eq $u) { continue }
-            $em = Get-KritGraphProp -Object $u -Name 'email'
-            $dn = Get-KritGraphProp -Object $u -Name 'displayName'
+            $em = Get-KriticalGraphProp -Object $u -Name 'email'
+            $dn = Get-KriticalGraphProp -Object $u -Name 'displayName'
             if ($em) { $emails += $em }
             if ($dn) { $names  += $dn }
         }
-        $link = Get-KritGraphProp -Object $p -Name 'link'
+        $link = Get-KriticalGraphProp -Object $p -Name 'link'
         [pscustomobject]@{
-            PermissionId    = Get-KritGraphProp -Object $p -Name 'id'
-            Roles           = @(Get-KritGraphProp -Object $p -Name 'roles')
+            PermissionId    = Get-KriticalGraphProp -Object $p -Name 'id'
+            Roles           = @(Get-KriticalGraphProp -Object $p -Name 'roles')
             GrantedToEmails = $emails
             GrantedToNames  = $names
-            WebUrl          = if ($link) { Get-KritGraphProp -Object $link -Name 'webUrl' } else { $null }
+            WebUrl          = if ($link) { Get-KriticalGraphProp -Object $link -Name 'webUrl' } else { $null }
             CreatedAt       = (Get-Date).ToString('yyyy-MM-ddTHH:mm:ssZ')
         }
     }

@@ -1,4 +1,4 @@
-function Start-KritLogSession {
+function Start-KriticalLogSession {
     <#
     .SYNOPSIS
         Starts a PSFramework log session under the Kritical namespace.
@@ -34,7 +34,7 @@ function Start-KritLogSession {
     }
 }
 
-function Stop-KritLogSession {
+function Stop-KriticalLogSession {
     [CmdletBinding()]
     param([string] $Name = 'Krit')
     try { if (Get-Module PSFramework) { Set-PSFLoggingProvider -Name $Name -Enabled $false -ErrorAction SilentlyContinue } } catch { }
@@ -42,14 +42,14 @@ function Stop-KritLogSession {
     Wait-PSFMessage -ErrorAction SilentlyContinue
 }
 
-function Write-KritLog {
+function Write-KriticalLog {
     <#
     .SYNOPSIS
         Structured logger. Uses PSFramework's Write-PSFMessage when available,
         else writes to the host + a plain log file under %LOCALAPPDATA%\Kritical\Logs.
 
     .EXAMPLE
-        Write-KritLog -Level Info -Message 'Hardening pass starting' -Tag 'krit-harden','phase-1'
+        Write-KriticalLog -Level Info -Message 'Hardening pass starting' -Tag 'krit-harden','phase-1'
     #>
     [CmdletBinding()]
     param(

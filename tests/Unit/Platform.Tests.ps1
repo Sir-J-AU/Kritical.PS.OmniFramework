@@ -1,11 +1,11 @@
 #requires -Modules Pester
 BeforeAll {
-    Import-Module (Join-Path $PSScriptRoot '..\..\src\Krit.OmniFramework.psm1') -Force
+    Import-Module (Join-Path $PSScriptRoot '..\..\src\Kritical.PS.OmniFramework.psm1') -Force
 }
 
-Describe 'Get-KritPlatform' {
+Describe 'Get-KriticalPlatform' {
     It 'returns a PSCustomObject with Family / DistroId / Architecture / IsAdmin' {
-        $p = Get-KritPlatform
+        $p = Get-KriticalPlatform
         $p | Should -Not -BeNullOrEmpty
         $p.Family       | Should -BeIn @('Windows','macOS','Linux','Unknown')
         $p.DistroId     | Should -Not -BeNullOrEmpty
@@ -17,15 +17,15 @@ Describe 'Get-KritPlatform' {
     }
     It 'returns Windows on a Windows host (this test machine is Windows)' {
         if ([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Windows)) {
-            (Get-KritPlatform).Family | Should -Be 'Windows'
+            (Get-KriticalPlatform).Family | Should -Be 'Windows'
         }
     }
 }
 
-Describe 'Test-KritIsAdmin / Test-KritIsElevated' {
+Describe 'Test-KriticalIsAdmin / Test-KriticalIsElevated' {
     It 'returns a boolean and the two helpers agree' {
-        $a = Test-KritIsAdmin
-        $b = Test-KritIsElevated
+        $a = Test-KriticalIsAdmin
+        $b = Test-KriticalIsElevated
         $a | Should -BeOfType [bool]
         $b | Should -BeOfType [bool]
         $a | Should -Be $b

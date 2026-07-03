@@ -1,4 +1,4 @@
-function New-KritHtmlReport {
+function New-KriticalHtmlReport {
     <#
     .SYNOPSIS
         Builds a Kritical-branded HTML report from arbitrary data using PSWriteHTML.
@@ -10,8 +10,8 @@ function New-KritHtmlReport {
         when PSWriteHTML is not installed.
 
     .EXAMPLE
-        $data = Get-KritToolInventory
-        New-KritHtmlReport -Title 'Tool Inventory' -Section @{ Tools = $data } -OutFile C:\drop\inv.html
+        $data = Get-KriticalToolInventory
+        New-KriticalHtmlReport -Title 'Tool Inventory' -Section @{ Tools = $data } -OutFile C:\drop\inv.html
 
     .NOTES
         Author: Joshua Finley - Kritical Pty Ltd
@@ -25,7 +25,7 @@ function New-KritHtmlReport {
         [string] $Subtitle,
         [switch] $NoOpen
     )
-    $bannerStr = Get-KritBanner -Title $Title
+    $bannerStr = Get-KriticalBanner -Title $Title
     $ts = (Get-Date).ToString('yyyy-MM-dd HH:mm K')
 
     # Ensure parent directory exists (PSWriteHTML's Save-HTML does NOT auto-create it; falls back to %TEMP% if missing).
@@ -100,12 +100,12 @@ function New-KritHtmlReport {
     }
 }
 
-function New-KritExcelReport {
+function New-KriticalExcelReport {
     <#
     .SYNOPSIS
         Builds a Kritical-branded .xlsx report from one or more datasets using ImportExcel.
     .EXAMPLE
-        New-KritExcelReport -Title 'Tool Inventory' -Sheet @{ Tools = (Get-KritToolInventory) } -OutFile C:\drop\inv.xlsx
+        New-KriticalExcelReport -Title 'Tool Inventory' -Sheet @{ Tools = (Get-KriticalToolInventory) } -OutFile C:\drop\inv.xlsx
     #>
     [CmdletBinding()]
     [OutputType([pscustomobject])]
@@ -115,13 +115,13 @@ function New-KritExcelReport {
         [Parameter(Mandatory)] [string]    $OutFile
     )
     if (-not (Get-Module -ListAvailable -Name ImportExcel)) {
-        throw "ImportExcel module not installed. Run Import-KritFoundation first."
+        throw "ImportExcel module not installed. Run Import-KriticalFoundation first."
     }
     Import-Module ImportExcel -Force -ErrorAction Stop
     New-Item -ItemType Directory -Path (Split-Path -Parent $OutFile) -Force -ErrorAction SilentlyContinue | Out-Null
     if (Test-Path -LiteralPath $OutFile) { Remove-Item -LiteralPath $OutFile -Force }
     # Banner sheet
-    $bannerLines = (Get-KritBanner -Title $Title).Split("`n")
+    $bannerLines = (Get-KriticalBanner -Title $Title).Split("`n")
     $bannerData = @(0..($bannerLines.Count-1) | ForEach-Object { [pscustomobject]@{ Line = $bannerLines[$_].TrimEnd() } })
     $bannerData | Export-Excel -Path $OutFile -WorksheetName 'Kritical' -AutoSize -BoldTopRow -Title "Kritical: $Title" -TitleSize 14 -TitleBold
     foreach ($k in $Sheet.Keys) {

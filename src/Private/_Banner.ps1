@@ -1,4 +1,4 @@
-function Get-KritBannerCanonicalPath {
+function Get-KriticalBannerCanonicalPath {
     [CmdletBinding()]
     [OutputType([string])]
     param()
@@ -11,7 +11,7 @@ function Get-KritBannerCanonicalPath {
     return $null
 }
 
-function Get-KritBanner {
+function Get-KriticalBanner {
     <#
     .SYNOPSIS
         Returns the canonical Kritical banner string (SirJ's Deaddrop / A Seriously Kritical(TM) Production).
@@ -26,7 +26,7 @@ function Get-KritBanner {
         if ($Title) { $line += " - $Title" }
         return $line
     }
-    if (-not $LogoPath) { $LogoPath = Get-KritBannerCanonicalPath }
+    if (-not $LogoPath) { $LogoPath = Get-KriticalBannerCanonicalPath }
     if (-not $LogoPath -or -not (Test-Path -LiteralPath $LogoPath)) {
         $line = '[Kritical(TM)] A Seriously Kritical Production | +61 1300 274 655 | sales at kritical dot net'
         if ($Title) { $line += "`n--- $Title ---" }
@@ -37,11 +37,11 @@ function Get-KritBanner {
     return $logo
 }
 
-function Write-KritBanner {
+function Write-KriticalBanner {
     [CmdletBinding()]
     param([string] $Title, [switch] $Compact, [switch] $NoColor, [string] $LogoPath)
     $useColor = -not $NoColor.IsPresent -and $null -ne $Host.UI.RawUI -and $null -ne $Host.UI.RawUI.ForegroundColor
-    $banner = Get-KritBanner -Title $Title -Compact:$Compact -LogoPath $LogoPath
+    $banner = Get-KriticalBanner -Title $Title -Compact:$Compact -LogoPath $LogoPath
     if (-not $useColor) { Write-Output $banner; return }
     foreach ($l in ($banner -split "`r?`n")) {
         $color = 'DarkCyan'

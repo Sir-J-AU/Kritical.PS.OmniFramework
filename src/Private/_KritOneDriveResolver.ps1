@@ -1,4 +1,4 @@
-function Get-KritGraphProp {
+function Get-KriticalGraphProp {
     <#
     .SYNOPSIS
         Internal helper. Safely fetches a property/key from a Graph response object
@@ -24,7 +24,7 @@ function Get-KritGraphProp {
     return $null
 }
 
-function Resolve-KritOneDriveDriveItem {
+function Resolve-KriticalOneDriveDriveItem {
     <#
     .SYNOPSIS
         Internal helper. Resolves a local OneDrive-for-Business sync path to its
@@ -32,7 +32,7 @@ function Resolve-KritOneDriveDriveItem {
 
     .DESCRIPTION
         Used by the public OneDrive sharing-link cmdlets (Get/Add/Set/Remove +
-        New-KritOneDriveShareLink). Encapsulates:
+        New-KriticalOneDriveShareLink). Encapsulates:
           - Microsoft.Graph.Authentication import + Connect-MgGraph (delegated)
           - HKCU OneDrive Business1 sync-root lookup
           - Path mapping → /me/drive/root:/<encoded-relative-path>

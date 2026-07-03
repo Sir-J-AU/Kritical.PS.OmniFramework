@@ -1,9 +1,9 @@
-function Get-KritToolInventoryDefaultPaths {
+function Get-KriticalToolInventoryDefaultPaths {
     <#
     .SYNOPSIS
         Returns the canonical per-OS list of standard tool-search paths
         (LSB + FHS for Linux, Apple-recommended for macOS, Windows app-install
-        conventions for Windows). Used by Get-KritToolInventory.
+        conventions for Windows). Used by Get-KriticalToolInventory.
     #>
     [CmdletBinding()]
     [OutputType([string[]])]
@@ -46,7 +46,7 @@ function Get-KritToolInventoryDefaultPaths {
     return $out
 }
 
-function Find-KritTool {
+function Find-KriticalTool {
     <#
     .SYNOPSIS
         Finds a tool by name across the OS-standard search paths.
@@ -54,7 +54,7 @@ function Find-KritTool {
         Returns every matching executable file (so you can spot duplicates
         across PATH entries). Honours Windows .exe/.cmd/.bat/.ps1 extension list.
     .EXAMPLE
-        Find-KritTool -Name git
+        Find-KriticalTool -Name git
     #>
     [CmdletBinding()]
     [OutputType([pscustomobject[]])]
@@ -62,8 +62,8 @@ function Find-KritTool {
         [Parameter(Mandatory)] [string] $Name,
         [string[]] $ExtraPath
     )
-    $plat = Get-KritPlatform
-    $paths = Get-KritToolInventoryDefaultPaths -Family $plat.Family
+    $plat = Get-KriticalPlatform
+    $paths = Get-KriticalToolInventoryDefaultPaths -Family $plat.Family
     if ($ExtraPath) { $paths += $ExtraPath | Where-Object { Test-Path -LiteralPath $_ } }
     $candExts = if ($plat.Family -eq 'Windows') { @('','.exe','.cmd','.bat','.ps1','.com') } else { @('') }
     $hits = [System.Collections.Generic.List[pscustomobject]]::new()
@@ -87,14 +87,14 @@ function Find-KritTool {
     $hits
 }
 
-function Test-KritToolPresent {
+function Test-KriticalToolPresent {
     [CmdletBinding()]
     [OutputType([bool])]
     param([Parameter(Mandatory)] [string] $Name, [string[]] $ExtraPath)
-    @(Find-KritTool -Name $Name -ExtraPath $ExtraPath).Count -gt 0
+    @(Find-KriticalTool -Name $Name -ExtraPath $ExtraPath).Count -gt 0
 }
 
-function Get-KritToolInventory {
+function Get-KriticalToolInventory {
     <#
     .SYNOPSIS
         FHS/LSB-aware multi-OS tool inventory. Reports presence + first-found path
@@ -107,12 +107,12 @@ function Get-KritToolInventory {
         runtimes, security tools, container/cloud CLIs, SSH/git, etc.
 
     .EXAMPLE
-        Get-KritToolInventory | Where-Object { $_.Present } | Format-Table Name, FirstPath
+        Get-KriticalToolInventory | Where-Object { $_.Present } | Format-Table Name, FirstPath
     .EXAMPLE
-        Get-KritToolInventory -Tool git, kubectl, terraform -IncludeDuplicates
+        Get-KriticalToolInventory -Tool git, kubectl, terraform -IncludeDuplicates
     .EXAMPLE
         # JSON for piping into a dashboard
-        Get-KritToolInventory | ConvertTo-Json -Depth 5
+        Get-KriticalToolInventory | ConvertTo-Json -Depth 5
 
     .NOTES
         Author: Joshua Finley - Kritical Pty Ltd
@@ -154,13 +154,13 @@ function Get-KritToolInventory {
             'apt','apt-get','dnf','yum','zypper','pacman','apk','brew','port','winget','choco','scoop'
         )
     }
-    $plat = Get-KritPlatform
-    $paths = Get-KritToolInventoryDefaultPaths -Family $plat.Family
+    $plat = Get-KriticalPlatform
+    $paths = Get-KriticalToolInventoryDefaultPaths -Family $plat.Family
     if ($ExtraPath) { $paths += $ExtraPath | Where-Object { Test-Path -LiteralPath $_ } }
 
     $rows = [System.Collections.Generic.List[pscustomobject]]::new()
     foreach ($t in $Tool) {
-        $hits = @(Find-KritTool -Name $t -ExtraPath $ExtraPath)
+        $hits = @(Find-KriticalTool -Name $t -ExtraPath $ExtraPath)
         $row = [pscustomobject]@{
             Name       = $t
             Present    = ($hits.Count -gt 0)

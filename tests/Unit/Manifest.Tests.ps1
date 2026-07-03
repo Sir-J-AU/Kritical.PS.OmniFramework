@@ -5,22 +5,22 @@
 
 BeforeAll {
     $script:RepoRoot = Resolve-Path (Join-Path $PSScriptRoot '..\..')
-    $script:Psd1     = Join-Path $script:RepoRoot 'src\Krit.OmniFramework.psd1'
-    Import-Module (Join-Path $script:RepoRoot 'src\Krit.OmniFramework.psm1') -Force
+    $script:Psd1     = Join-Path $script:RepoRoot 'src\Kritical.PS.OmniFramework.psd1'
+    Import-Module (Join-Path $script:RepoRoot 'src\Kritical.PS.OmniFramework.psm1') -Force
 }
 
 Describe 'Manifest integrity' {
     It 'Test-ModuleManifest passes' {
         $mi = Test-ModuleManifest -Path $script:Psd1
         $mi | Should -Not -BeNullOrEmpty
-        $mi.Name        | Should -Be 'Krit.OmniFramework'
+        $mi.Name        | Should -Be 'Kritical.PS.OmniFramework'
         $mi.Author      | Should -Be 'Joshua Finley'
         $mi.CompanyName | Should -Be 'Kritical Pty Ltd'
         $mi.Copyright   | Should -Match 'Kritical'
     }
     It 'Every FunctionsToExport entry actually exists in the loaded module' {
         $mi = Test-ModuleManifest -Path $script:Psd1
-        $exported = (Get-Command -Module Krit.OmniFramework | Select-Object -ExpandProperty Name) | Sort-Object
+        $exported = (Get-Command -Module Kritical.PS.OmniFramework | Select-Object -ExpandProperty Name) | Sort-Object
         foreach ($f in $mi.ExportedFunctions.Keys) {
             $exported | Should -Contain $f -Because "manifest declares $f but the module did not export it"
         }

@@ -3,7 +3,7 @@ BeforeDiscovery {
     $HasIX = [bool](Get-Module -ListAvailable -Name ImportExcel)
 }
 BeforeAll {
-    Import-Module (Join-Path $PSScriptRoot '..\..\src\Krit.OmniFramework.psm1') -Force
+    Import-Module (Join-Path $PSScriptRoot '..\..\src\Kritical.PS.OmniFramework.psm1') -Force
     $script:Tmp = Join-Path ([System.IO.Path]::GetTempPath()) ("krit-omni-xl-" + [guid]::NewGuid())
     New-Item -ItemType Directory -Path $script:Tmp | Out-Null
 }
@@ -11,7 +11,7 @@ AfterAll {
     Remove-Item -LiteralPath $script:Tmp -Recurse -Force -ErrorAction SilentlyContinue
 }
 
-Describe 'New-KritExcelReport (requires ImportExcel)' {
+Describe 'New-KriticalExcelReport (requires ImportExcel)' {
     It 'writes a multi-sheet xlsx including the Kritical banner sheet' -Skip:(-not $HasIX) {
         $out  = Join-Path $script:Tmp 'rpt.xlsx'
         $data = @(
@@ -19,7 +19,7 @@ Describe 'New-KritExcelReport (requires ImportExcel)' {
             [pscustomobject]@{ Name = 'nope'; Present = $false }
         )
         $other = @([pscustomobject]@{ Key='alpha'; Value=1 })
-        $r = New-KritExcelReport -Title 'UnitTest' -Sheet @{ Tools = $data; Misc = $other } -OutFile $out
+        $r = New-KriticalExcelReport -Title 'UnitTest' -Sheet @{ Tools = $data; Misc = $other } -OutFile $out
         Test-Path -LiteralPath $out | Should -BeTrue
         $r.Sheets | Should -Be 3   # Kritical + Tools + Misc
         $r.Renderer | Should -Be 'ImportExcel'
@@ -31,10 +31,10 @@ Describe 'New-KritExcelReport (requires ImportExcel)' {
     }
     It 'auto-creates the parent directory when OutFile parent does not exist' -Skip:(-not $HasIX) {
         $deep = Join-Path $script:Tmp ("missing-" + [guid]::NewGuid() + "\sub\rpt.xlsx")
-        { New-KritExcelReport -Title 'UnitTest' -Sheet @{ T = @([pscustomobject]@{a=1}) } -OutFile $deep } | Should -Not -Throw
+        { New-KriticalExcelReport -Title 'UnitTest' -Sheet @{ T = @([pscustomobject]@{a=1}) } -OutFile $deep } | Should -Not -Throw
         Test-Path -LiteralPath $deep | Should -BeTrue
     }
     It 'throws cleanly when ImportExcel is not installed' -Skip:($HasIX) {
-        { New-KritExcelReport -Title 'UnitTest' -Sheet @{ T = @() } -OutFile (Join-Path $script:Tmp 'x.xlsx') } | Should -Throw -ExpectedMessage '*ImportExcel*'
+        { New-KriticalExcelReport -Title 'UnitTest' -Sheet @{ T = @() } -OutFile (Join-Path $script:Tmp 'x.xlsx') } | Should -Throw -ExpectedMessage '*ImportExcel*'
     }
 }

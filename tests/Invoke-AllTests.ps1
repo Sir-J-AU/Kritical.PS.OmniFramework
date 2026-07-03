@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Krit.OmniFramework full test runner. Pester 5+. Output OUT of repo by default.
+    Kritical.PS.OmniFramework full test runner. Pester 5+. Output OUT of repo by default.
 .AUTHOR
     Joshua Finley - Kritical Pty Ltd
 #>
@@ -14,9 +14,9 @@ $ErrorActionPreference = 'Stop'
 
 $here = Split-Path -Parent $PSCommandPath
 $repo = Split-Path -Parent $here
-Import-Module (Join-Path $repo 'src\Krit.OmniFramework.psm1') -Force
+Import-Module (Join-Path $repo 'src\Kritical.PS.OmniFramework.psm1') -Force
 
-if (-not $NoBanner.IsPresent) { Write-KritBanner -Title 'Test Runner' }
+if (-not $NoBanner.IsPresent) { Write-KriticalBanner -Title 'Test Runner' }
 
 $pester = Get-Module Pester -ListAvailable | Sort-Object Version -Descending | Select-Object -First 1
 if (-not $pester -or $pester.Version.Major -lt 5) {
@@ -25,7 +25,7 @@ if (-not $pester -or $pester.Version.Major -lt 5) {
 }
 Import-Module Pester -MinimumVersion 5.5.0 -Force
 
-if (-not $OutputDir) { $OutputDir = Join-Path $env:LOCALAPPDATA 'Kritical\Krit.OmniFramework\test-output' }
+if (-not $OutputDir) { $OutputDir = Join-Path $env:LOCALAPPDATA 'Kritical\Kritical.PS.OmniFramework\test-output' }
 New-Item -ItemType Directory -Path $OutputDir -Force | Out-Null
 Write-Host ("Test artefacts -> " + $OutputDir) -ForegroundColor DarkGray
 $utc = (Get-Date).ToUniversalTime().ToString('yyyyMMdd-HHmmssZ')

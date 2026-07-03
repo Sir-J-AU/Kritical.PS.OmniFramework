@@ -1,4 +1,4 @@
-function New-KritBrandedDocument {
+function New-KriticalBrandedDocument {
     <#
     .SYNOPSIS
         Renders a Markdown (or HTML) source file to a Kritical-branded artefact
@@ -6,7 +6,7 @@ function New-KritBrandedDocument {
 
     .DESCRIPTION
         End-to-end pipeline for customer proposals, internal reports, training
-        decks etc. Pulls brand spec from Get-KritBrandSpec (single source of
+        decks etc. Pulls brand spec from Get-KriticalBrandSpec (single source of
         truth). Applies:
           - Primary colour (#13365C Kritical dark blue) on headings + tables
           - Secondary colour (#15AFD1 Kritical cyan) on accents
@@ -52,18 +52,18 @@ function New-KritBrandedDocument {
         Skip the Kritical banner Write-Host on console.
 
     .EXAMPLE
-        New-KritBrandedDocument -Source .\Kitchenworx-Proposal.md `
+        New-KriticalBrandedDocument -Source .\Kitchenworx-Proposal.md `
             -OutDir .\out -CustomerName Kitchenworx -DocumentTitle Proposal-Cover
 
     .EXAMPLE
         # PDF only
-        New-KritBrandedDocument -Source .\report.md -OutDir .\out -Format PDF `
+        New-KriticalBrandedDocument -Source .\report.md -OutDir .\out -Format PDF `
             -CustomerName Internal -DocumentTitle Q2-Report
 
     .EXAMPLE
         # Bulk a folder of .md files
         Get-ChildItem .\drafts\*.md | ForEach-Object {
-            New-KritBrandedDocument -Source $_.FullName -OutDir .\out `
+            New-KriticalBrandedDocument -Source $_.FullName -OutDir .\out `
                 -CustomerName EES -DocumentTitle ($_.BaseName)
         }
 
@@ -91,10 +91,10 @@ function New-KritBrandedDocument {
     New-Item -ItemType Directory -Path $OutDir -Force | Out-Null
 
     if (-not $NoBanner.IsPresent) {
-        try { Write-KritBanner -Title "BrandedDocument: $CustomerName - $DocumentTitle" -Compact } catch { }
+        try { Write-KriticalBanner -Title "BrandedDocument: $CustomerName - $DocumentTitle" -Compact } catch { }
     }
 
-    $spec = Get-KritBrandSpec
+    $spec = Get-KriticalBrandSpec
     $brandRoot = $null
     if ($env:USERPROFILE) {
         $candidate = Join-Path $env:USERPROFILE 'OneDrive - Kritical Pty Ltd\Kritical-Branding\public'
@@ -559,7 +559,7 @@ figure img { max-width: 82%; max-height: 42vh; }
     $headlessBrowser = if ($haveChrome) { $chromePath } elseif ($haveEdge) { $edgePath } else { $null }
 
     if (-not $haveP) {
-        throw "Pandoc is required for New-KritBrandedDocument. Install: winget install --id JohnMacFarlane.Pandoc"
+        throw "Pandoc is required for New-KriticalBrandedDocument. Install: winget install --id JohnMacFarlane.Pandoc"
     }
 
     $intermediateHtml = Join-Path $OutDir ("{0}-intermediate.html" -f $baseName)
@@ -681,7 +681,7 @@ figure img { max-width: 82%; max-height: 42vh; }
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>$($entity.tradeName) - $CustomerName - $DocumentTitle</title>
 <meta name="author" content="$($messaging.directorName)">
-<meta name="generator" content="Krit.OmniFramework / New-KritBrandedDocument">
+<meta name="generator" content="Kritical.PS.OmniFramework / New-KriticalBrandedDocument">
 <style>$css</style>
 </head>
 <body>
