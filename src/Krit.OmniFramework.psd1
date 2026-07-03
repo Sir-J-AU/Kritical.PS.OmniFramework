@@ -5,7 +5,7 @@
     Author            = 'Joshua Finley'
     CompanyName       = 'Kritical Pty Ltd'
     Copyright         = '(c) 2026 Kritical Pty Ltd. All rights reserved.'
-    Description       = 'Kritical OmniFramework — multi-OS PowerShell foundation. One Import-Module call gives you: structured logging (PSFramework), shared utilities (PSSharedGoods, disambiguated from psutil), HTML reporting (PSWriteHTML), Office/Word/PDF output (PSWriteOffice), Excel I/O (ImportExcel), OS+distro+architecture detection across Windows/macOS/Linux, FHS/LSB-aware tool-inventory walker, and Kritical-branded report templates. Built to stand under Krit.Hardening and every other Krit.* package.'
+    Description       = 'Kritical OmniFramework — multi-OS PowerShell foundation. One Import-Module call gives you: structured logging (PSFramework), shared utilities (PSSharedGoods, disambiguated from psutil), HTML reporting (PSWriteHTML), Office/Word/PDF output (PSWriteOffice), Excel I/O (ImportExcel), OS+distro+architecture detection across Windows/macOS/Linux, FHS/LSB-aware tool-inventory walker, and Kritical-branded report templates. Built to stand under Kritical.PS.Hardening and every other Kritical PowerShell package.'
     PowerShellVersion = '5.1'
     CompatiblePSEditions = @('Desktop','Core')
 
@@ -87,7 +87,7 @@
     consuming module's psm1 runs, so any stale PSFramework already loaded
     in the session (e.g. an older PSFramework 1.0.0.1 from a transient
     dependency) caused Import-Module Krit.OmniFramework — and everything
-    that depends on it (Krit.Hardening) — to fail with "Assembly with same
+    that depends on it (Kritical.PS.Hardening) — to fail with "Assembly with same
     name is already loaded".
   * Dependencies are now declared in ExternalModuleDependencies (PSData)
     so Install-Module Krit.OmniFramework STILL pulls them transitively on
