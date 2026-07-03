@@ -53,7 +53,7 @@ One `Import-Module` brings up the Kritical PowerShell foundation:
 | **Config + path resolution** | built-in | `Resolve-KriticalRepoRoot` / `Get-KriticalConfig` / `Get-KriticalProject` / `Get-KriticalPath` |
 | **Secrets posture (read-only)** | built-in | `Test-KriticalSecretsLoaded` |
 
-This module is the foundation under [`Krit.Pax8Mcp`](https://github.com/Sir-J-AU/Krit.Pax8Mcp), [`Kritical.PS.Hardening`](https://github.com/Sir-J-AU/Kritical.PS.Hardening), and every other Kritical operator / customer script.
+This module is the foundation under [`Kritical.Pax8Mcp`](https://github.com/Sir-J-AU/Kritical.Pax8Mcp), [`Kritical.PS.Hardening`](https://github.com/Sir-J-AU/Kritical.PS.Hardening), and every other Kritical operator / customer script.
 
 ---
 
@@ -175,7 +175,7 @@ Kritical.PS.OmniFramework/
 
 ## Related Kritical packages
 
-- **`Krit.Pax8Mcp`** — Pax8 hosted MCP wiring for Claude Code / Codex / Cursor / VS Code. <https://github.com/Sir-J-AU/Krit.Pax8Mcp>
+- **`Kritical.Pax8Mcp`** — Pax8 hosted MCP wiring for Claude Code / Codex / Cursor / VS Code. <https://github.com/Sir-J-AU/Kritical.Pax8Mcp>
 - **`Kritical.PS.Hardening`** — Windows hardening audit built on this foundation, wrapping HotCakeX Harden-Windows-Security-Module, HardeningKitty, and the Microsoft Security Compliance Toolkit. <https://github.com/Sir-J-AU/Kritical.PS.Hardening>
 - **`Kritical-Pax8API`** — headless Pax8 partner-API PowerShell client.
 
