@@ -119,11 +119,13 @@ function Set-KriticalOneDriveShareLinkPermission {
     Write-Verbose "PATCH: $permUri  $bodyJson"
     $resp = Invoke-MgGraphRequest -Method PATCH -Uri $permUri -Body $bodyJson -ContentType 'application/json' -ErrorAction Stop
 
+    # .5231 (lens-hunt): Invoke-MgGraphRequest returns a Hashtable; under Set-StrictMode
+    # -Version Latest direct member access ($resp.id) throws. Use the canonical safe accessor.
     [pscustomobject]@{
-        PermissionId       = $resp.id
-        Roles              = @($resp.roles)
-        ExpirationDateTime = $resp.expirationDateTime
-        HasPassword        = [bool]$resp.hasPassword
+        PermissionId       = Get-KriticalGraphProp -Object $resp -Name 'id'
+        Roles              = @(Get-KriticalGraphProp -Object $resp -Name 'roles')
+        ExpirationDateTime = Get-KriticalGraphProp -Object $resp -Name 'expirationDateTime'
+        HasPassword        = [bool](Get-KriticalGraphProp -Object $resp -Name 'hasPassword')
         ItemName           = $resolved.ItemName
         UpdatedAt          = (Get-Date).ToString('yyyy-MM-ddTHH:mm:ssZ')
     }

@@ -76,7 +76,28 @@ function Remove-KriticalOneDriveShareLinkPermission {
 
     $permUri = "/v1.0/me/drive/items/$($resolved.ItemId)/permissions/$PermissionId"
     Write-Verbose "Deleting: $permUri"
-    Invoke-MgGraphRequest -Method DELETE -Uri $permUri -ErrorAction Stop | Out-Null
+    # .5231 (lens-hunt): HR16 idempotency. Graph returns 404 when the permission is
+    # already gone; a second call must not throw. Swallow not-found and still report
+    # Removed=$true so re-runs converge on the same 'permission absent' end-state.
+    try {
+        Invoke-MgGraphRequest -Method DELETE -Uri $permUri -ErrorAction Stop | Out-Null
+    }
+    catch {
+        $isNotFound = $false
+        $ex = $_.Exception
+        if ($ex.PSObject.Properties['Response'] -and $ex.Response -and
+            $ex.Response.PSObject.Properties['StatusCode'] -and [int]$ex.Response.StatusCode -eq 404) {
+            $isNotFound = $true
+        }
+        elseif ($_.ErrorDetails -and $_.ErrorDetails.Message -match '(?i)itemNotFound|not\s*found|404') {
+            $isNotFound = $true
+        }
+        elseif ($_ -match '(?i)itemNotFound|not\s*found|404') {
+            $isNotFound = $true
+        }
+        if (-not $isNotFound) { throw }
+        Write-Verbose "Permission $PermissionId already absent (404) — treating as removed (idempotent)."
+    }
 
     [pscustomobject]@{
         PermissionId = $PermissionId
