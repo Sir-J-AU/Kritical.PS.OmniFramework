@@ -36,3 +36,6 @@ dist/
 **/Meetings/
 **/EES/
 **/Kitchenworx/
+
+# Pester run artifact
+testResults.xml
