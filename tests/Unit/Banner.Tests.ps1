@@ -37,3 +37,44 @@ Describe 'Write-KriticalBanner' {
     It 'does not throw (full)'    { { Write-KriticalBanner -Title 'Unit' -NoColor } | Should -Not -Throw }
     It 'does not throw (compact)' { { Write-KriticalBanner -Compact -NoColor } | Should -Not -Throw }
 }
+
+Describe 'Write-KriticalBanner agentic suppression' {
+    BeforeEach {
+        $script:savedEnv = @{
+            CLAUDECODE = $env:CLAUDECODE; AI_AGENT = $env:AI_AGENT
+            KRIT_NO_BANNER = $env:KRIT_NO_BANNER; CURSOR_TRACE_ID = $env:CURSOR_TRACE_ID
+            COPILOT_AGENT = $env:COPILOT_AGENT
+        }
+        $env:CLAUDECODE = $null; $env:AI_AGENT = $null
+        $env:KRIT_NO_BANNER = $null; $env:CURSOR_TRACE_ID = $null; $env:COPILOT_AGENT = $null
+    }
+    AfterEach {
+        $env:CLAUDECODE = $script:savedEnv.CLAUDECODE; $env:AI_AGENT = $script:savedEnv.AI_AGENT
+        $env:KRIT_NO_BANNER = $script:savedEnv.KRIT_NO_BANNER
+        $env:CURSOR_TRACE_ID = $script:savedEnv.CURSOR_TRACE_ID; $env:COPILOT_AGENT = $script:savedEnv.COPILOT_AGENT
+    }
+
+    It 'prints when no agentic marker is set' {
+        Test-KriticalAgenticSession | Should -Be $false
+        (Write-KriticalBanner -Compact -NoColor 6>&1 *>&1 | Out-String) | Should -Match 'Kritical'
+    }
+    It 'suppresses under $env:CLAUDECODE' {
+        $env:CLAUDECODE = '1'
+        Test-KriticalAgenticSession | Should -Be $true
+        (Write-KriticalBanner -Compact -NoColor *>&1 | Out-String) | Should -BeNullOrEmpty
+    }
+    It 'suppresses under $env:AI_AGENT' {
+        $env:AI_AGENT = 'claude-code_2-1-215_agent'
+        Test-KriticalAgenticSession | Should -Be $true
+        (Write-KriticalBanner -Compact -NoColor *>&1 | Out-String) | Should -BeNullOrEmpty
+    }
+    It 'suppresses under explicit $env:KRIT_NO_BANNER opt-out' {
+        $env:KRIT_NO_BANNER = '1'
+        Test-KriticalAgenticSession | Should -Be $true
+        (Write-KriticalBanner -Compact -NoColor *>&1 | Out-String) | Should -BeNullOrEmpty
+    }
+    It '-Force overrides agentic suppression' {
+        $env:CLAUDECODE = '1'
+        (Write-KriticalBanner -Compact -NoColor -Force *>&1 | Out-String) | Should -Match 'Kritical'
+    }
+}

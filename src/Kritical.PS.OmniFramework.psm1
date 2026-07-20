@@ -33,7 +33,7 @@ foreach ($dir in 'Private','Public') {
 }
 
 Export-ModuleMember -Function @(
-    'Write-KriticalBanner', 'Get-KriticalBanner',
+    'Write-KriticalBanner', 'Get-KriticalBanner', 'Test-KriticalAgenticSession',
     'Get-KriticalPlatform', 'Test-KriticalIsAdmin', 'Test-KriticalIsElevated',
     'Get-KriticalToolInventory', 'Find-KriticalTool', 'Test-KriticalToolPresent',
     'Import-KriticalFoundation', 'Get-KriticalFoundationStatus',
