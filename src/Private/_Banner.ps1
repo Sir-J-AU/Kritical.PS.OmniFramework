@@ -37,9 +37,28 @@ function Get-KriticalBanner {
     return $logo
 }
 
+function Test-KriticalAgenticSession {
+    <#
+    .SYNOPSIS
+        True when running inside an AI coding agent (Claude Code, etc.) rather than
+        an interactive human terminal -- the banner's ASCII art + sales pitch has zero
+        value to an agent and costs real tokens on every invocation.
+    .NOTES
+        Auto-detects via env vars agent harnesses already set (no convention needed):
+        $env:CLAUDECODE (Claude Code CLI/SDK), $env:AI_AGENT (generic marker this
+        estate's own tooling also honors). $env:KRIT_NO_BANNER is an explicit manual
+        opt-out for any other caller (CI, other agents, a human who just wants quiet).
+    #>
+    [CmdletBinding()]
+    [OutputType([bool])]
+    param()
+    return [bool]($env:KRIT_NO_BANNER -or $env:CLAUDECODE -or $env:AI_AGENT -or $env:CURSOR_TRACE_ID -or $env:COPILOT_AGENT)
+}
+
 function Write-KriticalBanner {
     [CmdletBinding()]
-    param([string] $Title, [switch] $Compact, [switch] $NoColor, [string] $LogoPath)
+    param([string] $Title, [switch] $Compact, [switch] $NoColor, [string] $LogoPath, [switch] $Force)
+    if ((Test-KriticalAgenticSession) -and -not $Force.IsPresent) { return }
     $useColor = -not $NoColor.IsPresent -and $null -ne $Host.UI.RawUI -and $null -ne $Host.UI.RawUI.ForegroundColor
     $banner = Get-KriticalBanner -Title $Title -Compact:$Compact -LogoPath $LogoPath
     if (-not $useColor) { Write-Output $banner; return }

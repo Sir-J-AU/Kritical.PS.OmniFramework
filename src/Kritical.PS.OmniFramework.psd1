@@ -1,6 +1,6 @@
 @{
     RootModule        = 'Kritical.PS.OmniFramework.psm1'
-    ModuleVersion     = '1.1.14'
+    ModuleVersion     = '1.1.15'
     GUID              = 'b3d1f5c9-7a4e-4c8b-9e2f-1a7c3b8d2e4f'
     Author            = 'Joshua Finley'
     CompanyName       = 'Kritical Pty Ltd'
@@ -21,6 +21,8 @@
     FunctionsToExport = @(
         # Banner
         'Write-KriticalBanner', 'Get-KriticalBanner',
+        # 1.1.15 - Agentic-session detection (auto-suppresses the banner under Claude Code etc. to save tokens)
+        'Test-KriticalAgenticSession',
         # Platform / OS detection
         'Get-KriticalPlatform', 'Test-KriticalIsAdmin', 'Test-KriticalIsElevated',
         # Tool inventory (multi-OS, FHS/LSB-aware)
