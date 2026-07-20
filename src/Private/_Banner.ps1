@@ -52,7 +52,15 @@ function Test-KriticalAgenticSession {
     [CmdletBinding()]
     [OutputType([bool])]
     param()
-    return [bool]($env:KRIT_NO_BANNER -or $env:CLAUDECODE -or $env:AI_AGENT -or $env:CURSOR_TRACE_ID -or $env:COPILOT_AGENT)
+    # Capture each var into a local once -- $env: reads on an unset var return
+    # $null (never throw, even under Set-StrictMode), but resolving locally
+    # keeps the boolean-combine below simple and keeps every check silent.
+    $noBanner    = $env:KRIT_NO_BANNER
+    $claudeCode  = $env:CLAUDECODE
+    $aiAgent     = $env:AI_AGENT
+    $cursorTrace = $env:CURSOR_TRACE_ID
+    $copilot     = $env:COPILOT_AGENT
+    return [bool]($noBanner -or $claudeCode -or $aiAgent -or $cursorTrace -or $copilot)
 }
 
 function Write-KriticalBanner {
