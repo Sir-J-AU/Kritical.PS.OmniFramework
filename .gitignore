@@ -39,3 +39,12 @@ dist/
 
 # Pester run artifact
 testResults.xml
+
+# --- Generated Lens/tool artefacts (added 20260726, estate-gitignore lane) ---
+# Regenerable machine output. Re-emit with the Lens sweep commands in AGENTS.md.
+# Hand-authored docs/ findings and scripts/*.ps1 are deliberately NOT ignored.
+# Lens sweep run output: timestamped, regenerable
+scripts/output/
+
+# Kritical repo lane-lease (see Kritical.PS.GitHub Enter-KritRepoLease) -- never commit
+.kritical-lane-lock.json
