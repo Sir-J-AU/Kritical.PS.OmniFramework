@@ -1,59 +1,42 @@
 function Remove-KriticalOneDriveShareLinkPermission {
     <#
     .SYNOPSIS
-        Revoke a single OneDrive share permission by its PermissionId.
+        Revoke a specific OneDrive share permission by permission ID.
 
     .DESCRIPTION
-        Calls Microsoft Graph `DELETE /me/drive/items/{id}/permissions/{permId}`.
-        Find the PermissionId via Get-KriticalOneDriveShareLinkPermissions.
-
-        Use cases:
-          • Customer engagement ends — revoke external recipient access.
-          • Internal staff leaves — pull their personal share permissions.
-          • Anonymous link no longer required — kill the link permission.
-          • Mistaken share — revert.
-
-        Other permissions on the same item are NOT touched.
+        Resolves the local OneDrive path to its DriveItem and deletes the named permission
+        through Microsoft Graph. Deleting an already-absent permission is idempotent: Graph
+        404/itemNotFound is treated as the desired final state and returns Removed=$true.
+        Non-not-found failures still propagate.
 
     .PARAMETER LocalPath
         Full path to a file or folder under the OneDrive for Business sync root.
 
     .PARAMETER PermissionId
-        The Graph permission ID to revoke (from Get-KriticalOneDriveShareLinkPermissions).
+        The Graph permission ID to revoke.
 
     .PARAMETER UseDeviceCode
         Force device-code auth flow for headless contexts.
 
     .EXAMPLE
-        Get-KriticalOneDriveShareLinkPermissions -LocalPath $f | Where-Object { $_.GrantedToEmails -contains 'lincoln@eeservices.io' } | ForEach-Object { Remove-KriticalOneDriveShareLinkPermission -LocalPath $f -PermissionId $_.PermissionId -Confirm:$false }
-
-        Revoke Lincoln's access after the engagement closes.
-
-    .EXAMPLE
-        Remove-KriticalOneDriveShareLinkPermission -LocalPath 'C:/Users/joshl/OneDrive - Kritical Pty Ltd/EES/EES-proposal-pack-FINAL-SHARED' -PermissionId 'aTowIy5xLnxs...'
-
-        Revoke a specific permission by ID.
+        Remove-KriticalOneDriveShareLinkPermission -LocalPath $f -PermissionId 'aTowIy5...' -Confirm:$false
 
     .OUTPUTS
-        PSCustomObject:
-          PermissionId  [string]  ID that was revoked
-          Removed       [bool]    true on Graph 204 No Content
-          ItemName      [string]
-          RemovedAt     [string]  ISO 8601
+        PSCustomObject with PermissionId, Removed, ItemName and RemovedAt.
 
     .NOTES
         CONTRACT
             inputs:
-              - LocalPath        : path; must exist + be under OneDrive sync root
-              - PermissionId     : Graph permission ID; required
+              - LocalPath    : path; must resolve to a OneDrive DriveItem
+              - PermissionId : Graph permission ID; required
             outputs:
-              - PSCustomObject with PermissionId / Removed / ItemName / RemovedAt
+              - PSCustomObject recording permission-absent convergence
             sideEffects:
               - Connects to Microsoft Graph (Files.ReadWrite.All + Sites.ReadWrite.All)
-              - Deletes the specified permission on the target DriveItem
-              - Other permissions on the same item are NOT touched
+              - Deletes only the named permission when it exists
             invariants:
-              - Permission ID must already exist; Graph returns 404 otherwise (re-raised)
+              - Graph 404/itemNotFound means the desired permission-absent state already holds and returns Removed=true
+              - non-404/non-not-found Graph errors are re-raised
               - asserts: paired tests/Unit/OneDriveShareLinkPermissions.Tests.ps1
 
         Author:  Joshua Finley
