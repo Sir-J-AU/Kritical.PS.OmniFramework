@@ -51,6 +51,19 @@ Describe 'Get-KriticalConfig' {
         $c.Config     | Should -Not -BeNullOrEmpty
         $c.Config.projects.sample.idRange | Should -Be '50100-50299'
     }
+
+    It 'returns Config null with a warning when the discovered JSON is malformed' {
+        $badRepo = Join-Path $script:Tmp 'bad-repo'
+        New-Item -ItemType Directory -Path (Join-Path $badRepo '.git') -Force | Out-Null
+        'ref: refs/heads/main' | Set-Content -LiteralPath (Join-Path $badRepo '.git\HEAD')
+        '{ malformed-json' | Set-Content -LiteralPath (Join-Path $badRepo 'krit-project.json') -Encoding utf8
+        $warnings = @()
+        $c = Get-KriticalConfig -StartPath $badRepo -WarningVariable warnings -WarningAction Continue
+        $c.ConfigName | Should -Be 'krit-project.json'
+        $c.Config | Should -BeNullOrEmpty
+        ($warnings -join "`n") | Should -Match 'is not valid JSON'
+        ($warnings -join "`n") | Should -Match 'krit-project\.json'
+    }
 }
 
 Describe 'Get-KriticalProject' {

@@ -110,12 +110,52 @@ Describe 'Set-KriticalOneDriveShareLinkPermission — surface contract' {
             Should -Not -BeNullOrEmpty
     }
 
-    It 'throws when no mutating param supplied (cannot test invoke without Graph; via smoke)' {
-        # Cannot reach inside the function without Graph + a real DriveItem, but we
-        # can confirm at least that all three Set-mutating params are Optional (above)
-        # and that the function exists. Live "throw when nothing-to-PATCH" is covered
-        # by the e2e harness when run with creds.
-        Get-Command Set-KriticalOneDriveShareLinkPermission | Should -Not -BeNullOrEmpty
+    It 'throws when no mutating param supplied' {
+        { Set-KriticalOneDriveShareLinkPermission -LocalPath 'unused' -PermissionId 'perm' -Confirm:$false } |
+            Should -Throw '*requires at least one*'
+    }
+}
+
+Describe '.5231 OneDrive permission behavioral regressions' {
+    InModuleScope Kritical.PS.OmniFramework {
+        BeforeEach {
+            Mock Resolve-KriticalOneDriveDriveItem {
+                [pscustomobject]@{ ItemId='item-1'; ItemName='fixture.txt' }
+            }
+        }
+
+        It 'accepts a Hashtable PATCH response under StrictMode and projects fields safely' {
+            Mock Invoke-MgGraphRequest {
+                @{ id='perm-1'; roles=@('write'); expirationDateTime='2026-09-30T23:59:00Z'; hasPassword=$true }
+            } -ParameterFilter { $Method -eq 'PATCH' }
+
+            $r = Set-KriticalOneDriveShareLinkPermission -LocalPath 'fixture' -PermissionId 'perm-1' -Role edit -Confirm:$false
+            $r.PermissionId | Should -Be 'perm-1'
+            $r.Roles | Should -Be @('write')
+            $r.ExpirationDateTime | Should -Be '2026-09-30T23:59:00Z'
+            $r.HasPassword | Should -BeTrue
+            $r.ItemName | Should -Be 'fixture.txt'
+            Should -Invoke Invoke-MgGraphRequest -Times 1 -Exactly -ParameterFilter { $Method -eq 'PATCH' }
+        }
+
+        It 'treats Graph 404 on repeated DELETE as converged Removed=true' {
+            Mock Invoke-MgGraphRequest {
+                $ex=[System.Exception]::new('permission not found')
+                $ex | Add-Member -MemberType NoteProperty -Name Response -Value ([pscustomobject]@{StatusCode=404})
+                throw $ex
+            } -ParameterFilter { $Method -eq 'DELETE' }
+
+            $r = Remove-KriticalOneDriveShareLinkPermission -LocalPath 'fixture' -PermissionId 'already-gone' -Confirm:$false
+            $r.PermissionId | Should -Be 'already-gone'
+            $r.Removed | Should -BeTrue
+            $r.ItemName | Should -Be 'fixture.txt'
+        }
+
+        It 'still propagates non-404 DELETE failures' {
+            Mock Invoke-MgGraphRequest { throw [System.InvalidOperationException]::new('Graph 500 fixture') } -ParameterFilter { $Method -eq 'DELETE' }
+            { Remove-KriticalOneDriveShareLinkPermission -LocalPath 'fixture' -PermissionId 'perm-err' -Confirm:$false } |
+                Should -Throw '*Graph 500 fixture*'
+        }
     }
 }
 
