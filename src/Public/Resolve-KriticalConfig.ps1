@@ -41,11 +41,21 @@ function Get-KriticalConfig {
     foreach ($c in $candidates) {
         $full = Join-Path $root $c
         if (Test-Path -LiteralPath $full) {
+            # .5231 (lens-hunt): ConvertFrom-Json throws a terminating error on malformed
+            # JSON, crashing every dependent caller. Guard it and surface a clear warning
+            # while returning a null Config (fallback) instead of taking the process down.
+            $parsed = $null
+            try {
+                $parsed = (Get-Content -LiteralPath $full -Raw | ConvertFrom-Json -ErrorAction Stop)
+            }
+            catch {
+                Write-Warning "Config at '$full' is not valid JSON: $($_.Exception.Message)"
+            }
             return [pscustomobject]@{
                 RepoRoot   = $root
                 ConfigPath = $full
                 ConfigName = $c
-                Config     = (Get-Content -LiteralPath $full -Raw | ConvertFrom-Json)
+                Config     = $parsed
             }
         }
     }
