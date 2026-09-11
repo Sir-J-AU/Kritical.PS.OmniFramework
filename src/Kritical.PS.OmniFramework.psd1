@@ -36,7 +36,7 @@
         # Config + path resolution (carried forward from Pax8FrameworkConfig)
         'Resolve-KriticalRepoRoot', 'Get-KriticalConfig', 'Get-KriticalProject', 'Get-KriticalPath',
         # Secrets posture (read-only)
-        'Test-KriticalSecretsLoaded',
+        'Test-KriticalSecretsLoaded', 'Get-KriticalAuthorityTuple', 'Save-KriticalCommercialPriceReceipt',
         # 1.1.0 - Brand pipeline
         'Get-KriticalBrandSpec',
         'New-KriticalBrandedDocument',

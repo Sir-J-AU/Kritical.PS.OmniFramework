@@ -40,7 +40,7 @@ Export-ModuleMember -Function @(
     'Write-KriticalLog', 'Start-KriticalLogSession', 'Stop-KriticalLogSession',
     'New-KriticalHtmlReport', 'New-KriticalExcelReport',
     'Resolve-KriticalRepoRoot', 'Get-KriticalConfig', 'Get-KriticalProject', 'Get-KriticalPath',
-    'Test-KriticalSecretsLoaded',
+    'Test-KriticalSecretsLoaded', 'Get-KriticalAuthorityTuple', 'Save-KriticalCommercialPriceReceipt',
     # 1.1.0 - Brand pipeline
     'Get-KriticalBrandSpec', 'New-KriticalBrandedDocument',
     # 1.1.8 - Programmatic markdown linter
