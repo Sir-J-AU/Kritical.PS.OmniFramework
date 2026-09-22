@@ -1,6 +1,6 @@
 @{
     RootModule        = 'Kritical.PS.OmniFramework.psm1'
-    ModuleVersion     = '1.1.15'
+    ModuleVersion     = '1.2.0'
     GUID              = 'b3d1f5c9-7a4e-4c8b-9e2f-1a7c3b8d2e4f'
     Author            = 'Joshua Finley'
     CompanyName       = 'Kritical Pty Ltd'
@@ -19,6 +19,8 @@
     # PSWriteOffice ships PSWriteWord/Excel/PowerPoint via separate modules in some versions; treat as optional.
 
     FunctionsToExport = @(
+        # 1.2.0 -- completion layer (PSFramework TEPP): tab-complete parameters and named presets
+        'Register-KriticalCompleter', 'Register-KriticalPreset', 'Get-KriticalPreset', 'Resolve-KriticalPreset', 'Get-KriticalCompleter',
         # Banner
         'Write-KriticalBanner', 'Get-KriticalBanner',
         # 1.1.15 - Agentic-session detection (auto-suppresses the banner under Claude Code etc. to save tokens)

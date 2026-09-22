@@ -33,6 +33,8 @@ foreach ($dir in 'Private','Public') {
 }
 
 Export-ModuleMember -Function @(
+    # 1.2.0 - Completion layer (PSFramework TEPP): tab-completion and named presets
+    'Register-KriticalCompleter', 'Register-KriticalPreset', 'Get-KriticalPreset', 'Resolve-KriticalPreset', 'Get-KriticalCompleter',
     'Write-KriticalBanner', 'Get-KriticalBanner', 'Test-KriticalAgenticSession',
     'Get-KriticalPlatform', 'Test-KriticalIsAdmin', 'Test-KriticalIsElevated',
     'Get-KriticalToolInventory', 'Find-KriticalTool', 'Test-KriticalToolPresent',
