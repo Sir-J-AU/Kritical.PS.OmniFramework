@@ -21,6 +21,9 @@ function Get-KriticalAuthorityTuple {
         [ValidateSet('dev','test','prod')]
         [string] $Environment,
 
+        [ValidatePattern('(?-i)^[a-z0-9-]{1,60}$')]
+        [string] $Profile,
+
         [string] $BaseUri = $env:KRIT_GW_MCP_BASE_URI,
         [string] $BearerToken = $env:GW_MCP_BEARER_TOKEN
     )
@@ -32,11 +35,14 @@ function Get-KriticalAuthorityTuple {
         throw 'ES authority bearer reference is unavailable. Set GW_MCP_BEARER_TOKEN; unauthenticated authority access is refused.'
     }
 
+    $toolArguments = @{ consumer = $Consumer; environment = $Environment }
+    if ($PSBoundParameters.ContainsKey('Profile')) { $toolArguments['profile'] = $Profile }
+
     $body = @{
         jsonrpc = '2.0'
         id = 1
         method = 'tools/call'
-        params = @{ name = 'get_effective_authority_tuple'; arguments = @{ consumer = $Consumer; environment = $Environment } }
+        params = @{ name = 'get_effective_authority_tuple'; arguments = $toolArguments }
     } | ConvertTo-Json -Depth 8 -Compress
 
     try {
@@ -58,11 +64,27 @@ function Get-KriticalAuthorityTuple {
     if ($tuple.status -ne 'ok') {
         throw "ES authority returned status '$($tuple.status)' instead of ok: $($tuple.reason)"
     }
+    # Strict-mode safe: an absent field reads as $null, never as an error.
+    $getField = { param($name) if ($tuple.PSObject.Properties[$name]) { $tuple.PSObject.Properties[$name].Value } else { $null } }
+    $candidates = @()
+    if ($null -ne (& $getField 'candidateProfiles')) { $candidates = @(& $getField 'candidateProfiles') }
+    if ($tuple.PSObject.Properties['effectiveStatus']) {
+        if ($tuple.effectiveStatus -cne 'GREEN') {
+            throw "ES authority effective status is '$($tuple.effectiveStatus)', not GREEN (code '$(& $getField 'code')'; candidateProfiles: $($candidates -join ', ')). Refusing to continue."
+        }
+    }
+    elseif ($PSBoundParameters.ContainsKey('Profile')) {
+        throw 'ES authority response has no effectiveStatus for a profile-scoped request; unknown is not GREEN. Refusing to continue.'
+    }
     if ($tuple.consumer -ne $Consumer -or $tuple.environment -ne $Environment) {
         throw 'ES authority response consumer/environment does not match the requested tuple.'
     }
     if ($null -eq $tuple.rows -or -not ($tuple.rows -is [System.Collections.IEnumerable])) {
         throw 'ES authority response rows are missing or malformed.'
+    }
+    if ($PSBoundParameters.ContainsKey('Profile') -and ((& $getField 'profileKey') -cne $Profile)) {
+        $returnedKey = if ($null -eq (& $getField 'profileKey')) { '<none>' } else { [string](& $getField 'profileKey') }
+        throw "ES authority returned profile key '$returnedKey' but the requested profile was '$Profile'. Refusing to continue."
     }
 
     $prefix = "client.$Consumer.$Environment."
@@ -81,5 +103,20 @@ function Get-KriticalAuthorityTuple {
             throw 'ES authority response has an invalid environment-variable reference name.'
         }
     }
-    $tuple
+
+    # Rebuild rather than Add-Member: PowerShell member names are case-insensitive, so the Pascal-case
+    # names would collide with the camelCase document fields they copy. Every other field is kept as-is.
+    $result = [pscustomobject]@{}
+    $pascalNames = @('ProfileKey','ProfileKind','ParentProfileKey','VendorClass','CandidateProfiles')
+    foreach ($property in $tuple.PSObject.Properties) {
+        if ($property.Name -notin $pascalNames) {
+            $result | Add-Member -NotePropertyName $property.Name -NotePropertyValue $property.Value
+        }
+    }
+    $result | Add-Member -NotePropertyName ProfileKey -NotePropertyValue (& $getField 'profileKey')
+    $result | Add-Member -NotePropertyName ProfileKind -NotePropertyValue (& $getField 'profileKind')
+    $result | Add-Member -NotePropertyName ParentProfileKey -NotePropertyValue (& $getField 'parentProfileKey')
+    $result | Add-Member -NotePropertyName VendorClass -NotePropertyValue (& $getField 'vendorClass')
+    $result | Add-Member -NotePropertyName CandidateProfiles -NotePropertyValue $candidates
+    $result
 }
