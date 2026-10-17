@@ -14,11 +14,11 @@ function Get-KriticalAuthorityTuple {
     [OutputType([pscustomobject])]
     param(
         [Parameter(Mandatory)]
-        [ValidateSet('pax8','d365bc','environment-switcher','document-renderer')]
+        [ValidatePattern('^[A-Za-z0-9._-]{1,80}\z')]
         [string] $Consumer,
 
         [Parameter(Mandatory)]
-        [ValidateSet('dev','test','prod')]
+        [ValidatePattern('^[A-Za-z0-9-]{1,80}\z')]
         [string] $Environment,
 
         [ValidatePattern('(?-i)^[a-z0-9-]{1,60}$')]
